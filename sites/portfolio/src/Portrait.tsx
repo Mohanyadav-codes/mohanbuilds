@@ -37,7 +37,7 @@ export function Portrait() {
       {/* Seam light down the middle. */}
       <motion.div
         className="pointer-events-none absolute bottom-[2%] left-1/2 top-[6%] w-px -translate-x-1/2"
-        style={{ background: "linear-gradient(to bottom, transparent, rgba(255,226,122,0.9) 30%, rgba(125,149,255,0.9) 70%, transparent)" }}
+        style={{ background: "linear-gradient(to bottom, transparent, rgba(255,40,40,0.9) 30%, rgba(125,149,255,0.9) 70%, transparent)" }}
         animate={{ opacity: [0.4, 1, 0.4] }}
         transition={{ duration: 3, repeat: Infinity }}
       />
@@ -88,8 +88,8 @@ function Drawing({ left, right }: { left: MotionValue<number>; right: MotionValu
           <stop offset="1" stopColor="#7d95ff" stopOpacity="0" />
         </radialGradient>
         <linearGradient id="rimL" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#ffd27a" stopOpacity="0.55" />
-          <stop offset="0.25" stopColor="#ffd27a" stopOpacity="0" />
+          <stop offset="0" stopColor="#ff5a4a" stopOpacity="0.55" />
+          <stop offset="0.25" stopColor="#ff5a4a" stopOpacity="0" />
         </linearGradient>
         <linearGradient id="rimR" x1="1" y1="0" x2="0" y2="0">
           <stop offset="0" stopColor="#7d95ff" stopOpacity="0.7" />

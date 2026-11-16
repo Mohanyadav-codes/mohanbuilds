@@ -1,13 +1,15 @@
 @import "tailwindcss";
+@import "@fontsource-variable/big-shoulders";
 @import "../../../shared/theme.css";
 @source "../../../shared";
 
 @theme {
-  --color-signal: #ffd21f;
-  --color-signal-soft: #ffe27a;
+  --color-signal: #ff2b2b;
+  --color-signal-soft: #ff8080;
   --color-gotham: #7d95ff;
   --color-steel: #8b93a7;
   --color-night: #05070c;
+  --font-gotham: "Big Shoulders Variable", "Bricolage Grotesque Variable", sans-serif;
 }
 
 :root {
@@ -15,5 +17,31 @@
 }
 
 .signal-glow {
-  text-shadow: 0 0 24px rgb(255 210 31 / 0.55), 0 0 60px rgb(255 210 31 / 0.25);
+  text-shadow: 0 0 24px rgb(229 20 27 / 0.55), 0 0 60px rgb(229 20 27 / 0.25);
+}
+
+/* Hero portrait: eye glow and lightning. */
+.portrait-eye {
+  background: radial-gradient(closest-side, rgba(225, 240, 255, 0.85), rgba(160, 200, 255, 0.35) 45%, transparent 100%);
+  filter: blur(2px);
+  mix-blend-mode: screen;
+  animation: portrait-eye 5.5s ease-in-out infinite;
+}
+@keyframes portrait-eye {
+  0%, 100% { opacity: 0.35; transform: translate(-50%, -50%) scale(0.9); }
+  50% { opacity: 0.85; transform: translate(-50%, -50%) scale(1.15); }
+}
+.portrait-flash {
+  filter: brightness(1.6) saturate(0.4) hue-rotate(185deg);
+  animation: portrait-flash 0.7s ease-out forwards;
+}
+@keyframes portrait-flash {
+  0% { opacity: 0; }
+  8% { opacity: 0.9; }
+  20% { opacity: 0.1; }
+  28% { opacity: 0.65; }
+  100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .portrait-eye { animation: none; opacity: 0.6; }
 }

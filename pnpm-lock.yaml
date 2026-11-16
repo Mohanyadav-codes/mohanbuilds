@@ -62,6 +62,9 @@ importers:
 
   sites/portfolio:
     dependencies:
+      '@fontsource-variable/big-shoulders':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@fontsource-variable/bricolage-grotesque':
         specifier: ^5.3.0
         version: 5.3.0
@@ -122,6 +125,9 @@ packages:
 
   '@emnapi/wasi-threads@2.2.0':
     resolution: {integrity: sha512-JP7OYH38Q7+pyTAe14raZHLQIK7BDKbdwji+Xi3pcd/6QkJYQH3SX4wu6EplGrGJWRepoNzedfm0G3B9Z4e9Rw==}
+
+  '@fontsource-variable/big-shoulders@5.3.0':
+    resolution: {integrity: sha512-b6JtGj6cqvOO5RLuzqLOoiG1ojTHhM8hNDmqbwQXmWCcQumP0gzHXgYviAooZZWLtEvOoX/EHboa+6/Nx2n9ng==}
 
   '@fontsource-variable/bricolage-grotesque@5.3.0':
     resolution: {integrity: sha512-TLi9Q4hJjS2UvoTMRSS2nHu6c4R56lAw60NR9QYtVRCHn0XtsFpiEhNffZ8Glsoxu6wEEwLKBP8lb94J52PNBA==}
@@ -779,6 +785,8 @@ snapshots:
     dependencies:
       tslib: 2.9.1
     optional: true
+
+  '@fontsource-variable/big-shoulders@5.3.0': {}
 
   '@fontsource-variable/bricolage-grotesque@5.3.0': {}
 

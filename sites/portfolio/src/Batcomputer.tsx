@@ -63,7 +63,7 @@ export function Batcomputer() {
                 key={t.id}
                 onClick={() => setActive(t.id)}
                 className={`group flex shrink-0 cursor-pointer items-center justify-between gap-3 rounded-xl px-4 py-3 text-left font-mono text-[12.5px] uppercase tracking-[0.14em] transition ${
-                  active === t.id ? (t.highlight ? "bg-signal text-black" : "bg-gotham/15 text-paper") : "text-steel hover:bg-white/[0.04] hover:text-paper"
+                  active === t.id ? (t.highlight ? "bg-signal text-white" : "bg-gotham/15 text-paper") : "text-steel hover:bg-white/[0.04] hover:text-paper"
                 }`}
               >
                 <span>

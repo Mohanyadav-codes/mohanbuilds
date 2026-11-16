@@ -6,7 +6,7 @@ export function BatLogo({
   className = "",
   oval = false,
   fill = "currentColor",
-  ovalFill = "#FFD21F",
+  ovalFill = "#e5141b",
 }: {
   className?: string;
   oval?: boolean;

@@ -34,6 +34,18 @@ export interface Product {
 
 export const products: Product[] = [
   {
+    id: "arclor",
+    name: "Arclor",
+    tagline: "Your product video, ready in minutes.",
+    blurb: "Paste your website. Arclor reads it, writes the script and animates a motion-graphics video you can edit with prompts.",
+    url: "https://arclor.com",
+    status: "live",
+    platforms: ["Web"],
+    price: "Free to start",
+    accent: "#3D5AFE",
+    accent2: "#A9B8FF",
+  },
+  {
     id: "cutdeck",
     name: "Cutdeck",
     tagline: "Long videos in. Shorts out.",
@@ -63,11 +75,11 @@ export interface Project {
 export const projects: Project[] = [
   {
     name: "Arclor",
-    kind: "AI agent · video · in progress",
+    kind: "AI agents · video",
     blurb: "An AI video director. Your coding agent writes the scenes; Arclor runs the whole film and checks every frame.",
     points: ["Plan, storyboard, scenes, QA, render", "Talks to coding agents over MCP", "Remotion renders, AI voiceover and music"],
     stack: ["TypeScript", "MCP", "Remotion", "AI agents"],
-    url: "https://www.youtube.com/@Mohan.Builds",
+    url: "https://arclor.com",
     building: true,
     hue: 40,
   },

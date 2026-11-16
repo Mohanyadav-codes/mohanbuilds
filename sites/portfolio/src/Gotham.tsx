@@ -62,6 +62,7 @@ export function Lightning() {
     const loop = () => {
       t = window.setTimeout(() => {
         setFlash((f) => f + 1);
+        window.dispatchEvent(new Event("gotham:lightning"));
         loop();
       }, 6000 + Math.random() * 9000);
     };
@@ -97,7 +98,7 @@ export function Skyline({ className = "", fill = "#03050a" }: { className?: stri
           {Array.from({ length: Math.floor(h / 26) }).map((_, r) =>
             Array.from({ length: Math.max(1, Math.floor(w / 14)) }).map((__, k) =>
               (i * 7 + r * 3 + k * 5) % 9 === 0 ? (
-                <rect key={`${r}-${k}`} x={x + 5 + k * 14} y={400 - h + 12 + r * 26} width={4} height={6} fill="#ffd27a" opacity={0.55} />
+                <rect key={`${r}-${k}`} x={x + 5 + k * 14} y={400 - h + 12 + r * 26} width={4} height={6} fill="#ff5a4a" opacity={0.55} />
               ) : null,
             ),
           )}
@@ -113,7 +114,7 @@ export function SignalBeam({ className = "", sweep = true }: { className?: strin
     <div className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}>
       <motion.div
         className="absolute bottom-[-10%] left-[66%] h-[130%] w-[40vw] origin-bottom"
-        style={{ background: "linear-gradient(to top, rgba(255,226,122,0.28), rgba(255,226,122,0.05) 70%, transparent)", clipPath: "polygon(47% 100%, 53% 100%, 100% 0, 0 0)", filter: "blur(6px)" }}
+        style={{ background: "linear-gradient(to top, rgba(255,40,40,0.28), rgba(255,40,40,0.05) 70%, transparent)", clipPath: "polygon(47% 100%, 53% 100%, 100% 0, 0 0)", filter: "blur(6px)" }}
         animate={sweep ? { rotate: [-14, -6, -14] } : { rotate: -10 }}
         transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
       />
@@ -125,8 +126,8 @@ export function SignalBeam({ className = "", sweep = true }: { className?: strin
         <svg viewBox="-14 -22 228 150" className="w-full" style={{ filter: "blur(1.5px)" }}>
           <defs>
             <radialGradient id="sigfill">
-              <stop offset="0" stopColor="#fff3b0" stopOpacity="0.55" />
-              <stop offset="1" stopColor="#ffd21f" stopOpacity="0.18" />
+              <stop offset="0" stopColor="#ffb0a8" stopOpacity="0.55" />
+              <stop offset="1" stopColor="#e5141b" stopOpacity="0.18" />
             </radialGradient>
           </defs>
           <ellipse cx="100" cy="53" rx="112" ry="72" fill="url(#sigfill)" />

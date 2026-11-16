@@ -1,9 +1,10 @@
 import { motion, useScroll, useTransform } from "motion/react";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { person } from "@shared/content";
 import { BatLogo } from "./BatLogo";
 import { Clouds, Rain, SignalBeam, Skyline } from "./Gotham";
 import { Portrait } from "./Portrait";
+import { PortraitPhoto } from "./PortraitPhoto";
 
 function Word({ text, delay, align }: { text: string; delay: number; align: "left" | "right" }) {
   return (
@@ -11,8 +12,8 @@ function Word({ text, delay, align }: { text: string; delay: number; align: "lef
       initial={{ opacity: 0, x: align === "left" ? -60 : 60, filter: "blur(12px)" }}
       animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
       transition={{ delay, duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-      className={`font-display font-extrabold uppercase leading-[0.8] tracking-[-0.05em] text-[clamp(64px,9.4vw,170px)] text-center ${align === "left" ? "md:text-right" : "md:text-left"}`}
-      style={{ WebkitTextStroke: "1px rgba(244,239,231,0.12)", color: "transparent", backgroundImage: "linear-gradient(180deg, #f4efe7 20%, rgba(244,239,231,0.15) 95%)", WebkitBackgroundClip: "text", backgroundClip: "text" }}
+      className={`font-gotham font-black uppercase leading-[0.82] tracking-[0.02em] text-[clamp(84px,10.5vw,190px)] px-[0.06em] text-center ${align === "left" ? "md:text-right" : "md:text-left"}`}
+      style={{ color: "transparent", backgroundImage: "linear-gradient(180deg, #ffffff 0%, #d9dde6 34%, #8a92a5 50%, #c9ced9 62%, rgba(150,160,180,0.2) 100%)", WebkitBackgroundClip: "text", backgroundClip: "text", filter: "drop-shadow(0 10px 30px rgba(0,0,0,0.65))" }}
     >
       {text}
     </motion.div>
@@ -25,6 +26,14 @@ export function Hero() {
   const portraitY = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
   const textY = useTransform(scrollYProgress, [0, 1], ["0%", "-30%"]);
   const fade = useTransform(scrollYProgress, [0.5, 1], [1, 0]);
+  // The half-and-half photo when it is in /public, the drawing otherwise.
+  const [mode, setMode] = useState<"wait" | "photo" | "svg">("wait");
+  useEffect(() => {
+    const i = new Image();
+    i.onload = () => setMode("photo");
+    i.onerror = () => setMode("svg");
+    i.src = PortraitPhoto.src;
+  }, []);
 
   return (
     <section id="top" ref={ref} className="relative h-[100svh] min-h-[720px] overflow-hidden">
@@ -36,7 +45,7 @@ export function Hero() {
       <Skyline className="absolute inset-x-0 bottom-0 h-[28%] w-full scale-x-[-1]" fill="#020308" />
 
       {/* Name split around the portrait. */}
-      <motion.div style={{ y: textY, opacity: fade }} className="absolute inset-x-0 top-[13%] z-10 grid grid-cols-1 gap-1 px-6 md:top-[26%] md:grid-cols-2 md:gap-[min(30vw,420px)]">
+      <motion.div style={{ y: textY, opacity: fade }} className="absolute inset-x-0 top-[13%] z-10 grid grid-cols-1 gap-1 px-6 md:top-[26%] md:grid-cols-2 md:gap-[min(28vw,400px)]">
         <Word text="Mohan" delay={0.3} align="left" />
         <Word text="Yadav" delay={0.45} align="right" />
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }} className="mt-5 text-center md:hidden">
@@ -46,11 +55,25 @@ export function Hero() {
         </motion.div>
       </motion.div>
 
-      <motion.div style={{ y: portraitY }} className="absolute bottom-0 left-1/2 z-20 w-[min(78vw,470px)] -translate-x-1/2">
-        <motion.div initial={{ opacity: 0, y: 80 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 1.4, ease: [0.16, 1, 0.3, 1] }}>
-          <Portrait />
+      {mode === "photo" && (
+        <motion.div style={{ y: portraitY }} className="pointer-events-none absolute bottom-0 left-1/2 z-20 h-[min(88svh,1000px)] -translate-x-1/2 max-md:h-[62svh]">
+          <motion.div
+            initial={{ opacity: 0, y: 60, filter: "brightness(0)" }}
+            animate={{ opacity: 1, y: 0, filter: "brightness(1)" }}
+            transition={{ delay: 0.4, duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+            className="h-full"
+          >
+            <PortraitPhoto />
+          </motion.div>
         </motion.div>
-      </motion.div>
+      )}
+      {mode === "svg" && (
+        <motion.div style={{ y: portraitY }} className="absolute bottom-0 left-1/2 z-20 w-[min(78vw,470px)] -translate-x-1/2">
+          <motion.div initial={{ opacity: 0, y: 80 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 1.4, ease: [0.16, 1, 0.3, 1] }}>
+            <Portrait />
+          </motion.div>
+        </motion.div>
+      )}
 
       <Rain />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-40 bg-gradient-to-t from-night to-transparent" />
