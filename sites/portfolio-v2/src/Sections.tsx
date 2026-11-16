@@ -83,7 +83,7 @@ export function Hero({ ready }: { ready: boolean }) {
               I build AI tools. <span className="text-lime">Then I film them.</span>
             </motion.p>
             <motion.div {...show(1.05)} className="mt-8 flex flex-wrap items-center gap-2 font-mono text-[12px]">
-              {[person.role, person.since].map((t) => (
+              {[person.role, person.city].map((t) => (
                 <span key={t} className="rounded-md border border-line bg-panel/70 px-2.5 py-1 text-mute">
                   {t}
                 </span>
@@ -453,7 +453,6 @@ export function Readme() {
     ["training", "B.Tech, 3rd year · DTU"],
     ["shipping", "Arclor, Cutdeck"],
     ["side_mission", "Freelance builds and videos"],
-    ["started", "class 9"],
     ["soundtrack", "whatever fits the build"],
   ];
   return (
@@ -536,23 +535,23 @@ export function lightSignal() {
 function Emblem({ lit }: { lit: boolean }) {
   return (
     <div className="relative grid aspect-[2/1] w-[min(72vw,360px)] place-items-center">
-      {/* Halo: breathes when idle, blooms when lit. */}
+      {/* Wide bloom: breathes when idle, opens up when lit. */}
       <motion.div
-        className="absolute -inset-[45%] rounded-full"
-        style={{ background: "radial-gradient(closest-side, rgba(255,255,255,0.5), rgba(255,255,255,0.14) 50%, transparent)", filter: "blur(10px)" }}
-        animate={lit ? { scale: 1.25, opacity: 1 } : { scale: [0.78, 0.9, 0.78], opacity: [0.35, 0.55, 0.35] }}
-        transition={lit ? { duration: 0.9, ease } : { duration: 3.4, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute -inset-x-[60%] -inset-y-[110%] rounded-[50%]"
+        style={{ background: "radial-gradient(closest-side, rgba(255,255,255,0.22), rgba(255,255,255,0.07) 55%, transparent)", filter: "blur(28px)" }}
+        animate={lit ? { scale: 1.15, opacity: 1 } : { scale: [0.7, 0.8, 0.7], opacity: [0.45, 0.7, 0.45] }}
+        transition={lit ? { duration: 1, ease } : { duration: 3.6, repeat: Infinity, ease: "easeInOut" }}
       />
-      {/* The disc of light the bat sits in. No outline, just a soft edge. */}
+      {/* Core light right behind the bat, heavily blurred so it has no edge. */}
       <motion.div
-        className="absolute -inset-x-[9%] -inset-y-[22%] rounded-[50%]"
+        className="absolute -inset-x-[2%] -inset-y-[14%] rounded-[50%]"
         style={{
-          background:
-            "radial-gradient(ellipse at center, #ffffff 0%, rgba(255,255,255,0.95) 42%, rgba(255,255,255,0.45) 62%, rgba(255,255,255,0) 72%)",
+          background: "radial-gradient(closest-side, rgba(255,255,255,0.92), rgba(255,255,255,0.55) 45%, rgba(255,255,255,0.14) 78%, transparent)",
+          filter: "blur(22px)",
         }}
         initial={false}
-        animate={lit ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.6 }}
-        transition={{ duration: 0.7, ease }}
+        animate={lit ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.55 }}
+        transition={{ duration: 0.8, ease }}
       />
       <svg viewBox="0 8 200 92" className="relative w-[86%] drop-shadow-[0_0_1px_rgba(255,255,255,0.4)]" aria-hidden>
         <path d={BAT_PATH} fill="#050505" />
@@ -599,15 +598,19 @@ export function Signal() {
       {/* The V of light from the rooftop lamp up to the emblem. */}
       <motion.div
         className="pointer-events-none absolute bottom-[11.6vw] left-1/2 h-[82%] w-[72vw] max-w-[1100px] origin-bottom -translate-x-1/2"
-        style={{
-          background: "linear-gradient(to top, rgba(255,255,255,0.45), rgba(255,255,255,0.1) 70%, transparent)",
-          clipPath: "polygon(48.5% 100%, 51.5% 100%, 76% 0, 24% 0)",
-          filter: "blur(10px)",
-        }}
+        style={{ filter: "blur(24px)" }}
         initial={false}
         animate={lit ? { scaleY: 1, opacity: 1 } : { scaleY: 0, opacity: 0 }}
         transition={{ duration: 0.9, ease, delay: lit ? 0.1 : 0 }}
-      />
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(to top, rgba(255,255,255,0.26), rgba(255,255,255,0.07) 45%, transparent 68%)",
+            clipPath: "polygon(48.5% 100%, 51.5% 100%, 76% 0, 24% 0)",
+          }}
+        />
+      </motion.div>
 
       <div className="relative z-10 mx-auto flex max-w-[1100px] flex-col items-center px-5 text-center">
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 font-mono text-[12px]">

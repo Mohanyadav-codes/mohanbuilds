@@ -32,7 +32,7 @@ type Row = {
 
 // Oldest first.
 const ROWS: Row[] = [
-  { msg: "init: first line of code", root: true, refs: [{ t: "tag: class-9", c: SUN }] },
+  { msg: "init: first line of code", root: true, refs: [{ t: "tag: v0.1", c: SUN }] },
   { msg: "learn: C++, Python, SQL" },
   { msg: "feat: vision attendance · OpenCV + Flask" },
   { msg: "feat: api ninja · a fast API client" },
