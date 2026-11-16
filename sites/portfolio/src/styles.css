@@ -1,0 +1,19 @@
+@import "tailwindcss";
+@import "../../../shared/theme.css";
+@source "../../../shared";
+
+@theme {
+  --color-signal: #ffd21f;
+  --color-signal-soft: #ffe27a;
+  --color-gotham: #7d95ff;
+  --color-steel: #8b93a7;
+  --color-night: #05070c;
+}
+
+:root {
+  background: var(--color-night);
+}
+
+.signal-glow {
+  text-shadow: 0 0 24px rgb(255 210 31 / 0.55), 0 0 60px rgb(255 210 31 / 0.25);
+}

@@ -1,0 +1,9 @@
+{
+  "name": "mohanbuilds-web",
+  "private": true,
+  "scripts": {
+    "dev:portfolio": "pnpm --filter portfolio dev",
+    "dev:cutdeck": "pnpm --filter cutdeck-site dev",
+    "build": "pnpm -r build"
+  }
+}
