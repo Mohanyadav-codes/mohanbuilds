@@ -2,6 +2,7 @@ import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { person } from "@shared/content";
 import { go, sections, useActiveSection, useClock } from "./lib";
+import { BatLogo } from "./Bat";
 
 /** Top bar styled like an editor's tab strip. */
 export function TopBar({ onPalette }: { onPalette: () => void }) {
@@ -36,6 +37,14 @@ export function TopBar({ onPalette }: { onPalette: () => void }) {
         </nav>
         <div className="ml-auto flex items-center gap-3">
           <span className="hidden font-mono text-[11px] text-dim sm:block">{person.city} · {time} IST</span>
+          <button
+            onClick={() => (go("signal"), setTimeout(() => window.dispatchEvent(new Event("signal:light")), 650))}
+            title="Light the signal"
+            aria-label="Light the signal"
+            className="group grid h-[30px] w-[42px] place-items-center rounded-lg border border-line bg-panel transition hover:border-bat/60"
+          >
+            <BatLogo className="h-2.5 w-6 text-bat/55 transition group-hover:text-bat group-hover:drop-shadow-[0_0_6px_rgba(255,210,31,0.9)]" />
+          </button>
           <button
             onClick={onPalette}
             className="flex items-center gap-2 rounded-lg border border-line bg-panel px-2.5 py-1.5 font-mono text-[11px] text-mute transition hover:border-lime/50 hover:text-text"
@@ -97,6 +106,7 @@ export function Palette({ open, setOpen }: { open: boolean; setOpen: (v: boolean
           setTimeout(() => setCopied(false), 1600);
         },
       },
+      { group: "Do", label: "Light the signal", hint: "l", run: () => (go("signal"), setTimeout(() => window.dispatchEvent(new Event("signal:light")), 650)) },
       { group: "Do", label: "Write an email", hint: "mailto", run: () => (window.location.href = `mailto:${person.email}`) },
     ],
     [],
@@ -205,7 +215,7 @@ export function Palette({ open, setOpen }: { open: boolean; setOpen: (v: boolean
             <div className="flex gap-4 border-t border-line px-4 py-2.5 font-mono text-[10.5px] text-dim">
               <span>↑↓ move</span>
               <span>↵ run</span>
-              <span className="ml-auto">on the page: j / k next, q top</span>
+              <span className="ml-auto">on the page: j / k next, q top, l signal</span>
             </div>
           </motion.div>
         </motion.div>
