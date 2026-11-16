@@ -1,0 +1,9 @@
+@import "tailwindcss";
+@import "../../../shared/theme.css";
+@source "../../../shared";
+
+@font-face { font-family: "Archivo Black"; src: url("/ArchivoBlack-Regular.ttf"); font-display: swap; }
+@font-face { font-family: "Anton"; src: url("/Anton-Regular.ttf"); font-display: swap; }
+@font-face { font-family: "Bangers"; src: url("/Bangers-Regular.ttf"); font-display: swap; }
+@font-face { font-family: "Bungee"; src: url("/Bungee-Regular.ttf"); font-display: swap; }
+@font-face { font-family: "Poppins"; font-weight: 700; src: url("/Poppins-Bold.ttf"); font-display: swap; }
