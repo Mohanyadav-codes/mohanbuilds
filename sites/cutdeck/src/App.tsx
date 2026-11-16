@@ -258,6 +258,7 @@ const FAQ = [
   ["Does my video get uploaded?", "No. Video stays on your computer. Only compressed audio and the transcript go to the AI provider you chose. With an open-source model and on-device Whisper, nothing leaves at all."],
   ["What does it need?", "Windows 10 or 11, 8 GB RAM recommended. A GPU makes exports faster but isn't required."],
   ["Can I use other AI providers?", "Yes: Groq, Gemini, Grok (xAI), OpenAI, OpenRouter, or a local model through Ollama or LM Studio."],
+  ["YouTube asked for a sign-in check?", "YouTube sometimes blocks downloads from VPNs and busy networks. Cutdeck updates its downloader and retries by itself. If it still fails, turn off your VPN or sign in to YouTube in Firefox, and Cutdeck will use that sign-in. You can switch this off in Settings."],
   ["Mac?", "A macOS version is planned. Follow Mohan Builds on YouTube to hear when it ships."],
 ];
 
