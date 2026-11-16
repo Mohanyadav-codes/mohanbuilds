@@ -5,6 +5,7 @@ import { person } from "@shared/content";
 import { HeroVisual } from "./HeroVisual";
 import { release } from "./release";
 import { TrayDemo } from "./TrayDemo";
+import { Loader } from "./Loader";
 
 function DownloadButton({ big = false }: { big?: boolean }) {
   return (
@@ -46,41 +47,70 @@ function Nav() {
   );
 }
 
-function Hero() {
+const SOURCES = ["YouTube", "Kick", "Twitch", "MP4"];
+
+function Hero({ ready }: { ready: boolean }) {
+  const show = (d: number) => ({ initial: { opacity: 0, y: 18 }, animate: ready ? { opacity: 1, y: 0 } : {}, transition: { delay: d, type: "spring" as const, stiffness: 120, damping: 20 } });
   return (
-    <section className="relative overflow-hidden pb-16 pt-32 md:pt-40">
-      <div className="pointer-events-none absolute left-1/2 top-[-20%] h-[80vh] w-[80vh] -translate-x-1/2 rounded-full bg-coral/20 blur-[140px]" />
-      <div className="pointer-events-none absolute right-[-10%] top-[30%] h-[50vh] w-[50vh] rounded-full bg-amber/10 blur-[140px]" />
-      <div className="relative mx-auto max-w-[1240px] px-6 text-center">
-        <motion.a
-          href={person.links[0].url}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mx-auto mb-7 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-[12.5px] text-mute hover:text-paper"
-        >
-          <span className="rounded-full bg-coral px-1.5 py-px text-[10px] font-bold uppercase tracking-wider text-white">New</span>
-          Version {release.version} · Free for Windows
-        </motion.a>
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.08, type: "spring", stiffness: 120, damping: 20 }}
-          className="font-display text-[clamp(52px,9vw,124px)] font-extrabold leading-[0.92] tracking-[-0.055em]"
-        >
-          Long videos in.
-          <br />
-          <span className="text-gradient">Shorts out.</span>
-        </motion.h1>
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }} className="mx-auto mt-6 max-w-[620px] text-[18px] leading-relaxed text-mute md:text-[20px]">
-          Paste a YouTube, Kick or Twitch link. Cutdeck finds the moments worth posting, frames them vertical and adds captions. You swipe, it exports.
-        </motion.p>
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="mt-9 flex flex-col items-center gap-3">
-          <DownloadButton big />
-          <span className="text-[13px] text-dim">{release.os} · macOS coming later</span>
-        </motion.div>
-        <div className="mt-14">
-          <HeroVisual />
+    <section className="relative overflow-hidden pb-20 pt-28 md:pt-32 lg:min-h-[100svh] lg:pb-10">
+      {/* Dot grid that fades out at the edges, plus warm light behind the deck. */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.07)_1px,transparent_1px)] [background-size:26px_26px] [mask-image:radial-gradient(ellipse_70%_60%_at_60%_40%,black,transparent)]" />
+      <div className="pointer-events-none absolute right-[-8%] top-[8%] h-[75vh] w-[75vh] rounded-full bg-coral/20 blur-[150px]" />
+      <div className="pointer-events-none absolute left-[-12%] top-[40%] h-[50vh] w-[50vh] rounded-full bg-amber/[0.07] blur-[140px]" />
+
+      <div className="relative mx-auto grid max-w-[1240px] items-center gap-6 px-6 lg:min-h-[calc(100svh-10rem)] lg:grid-cols-[0.92fr_1.08fr]">
+        <div className="text-center lg:text-left">
+          <motion.a
+            href={person.links[0].url}
+            {...show(0)}
+            className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-[12.5px] text-mute hover:text-paper"
+          >
+            <span className="rounded-full bg-coral px-1.5 py-px text-[10px] font-bold uppercase tracking-wider text-white">New</span>
+            Version {release.version} · Free for Windows
+          </motion.a>
+          <motion.h1 {...show(0.08)} className="whitespace-nowrap font-display text-[clamp(44px,5.6vw,84px)] font-extrabold leading-[0.92] tracking-[-0.055em]">
+            Long videos in.
+            <br />
+            <span className="text-gradient">Shorts out.</span>
+          </motion.h1>
+          <motion.p {...show(0.18)} className="mx-auto mt-6 max-w-[500px] text-[18px] leading-relaxed text-mute lg:mx-0 md:text-[19px]">
+            Paste a link. Cutdeck finds the best moments, frames them vertical and adds captions. You swipe, it exports.
+          </motion.p>
+          <motion.div {...show(0.28)} className="mt-9 flex flex-col items-center gap-4 lg:items-start">
+            <DownloadButton big />
+            <div className="flex flex-wrap items-center justify-center gap-2 text-[12.5px] text-dim lg:justify-start">
+              <span>Works with</span>
+              {SOURCES.map((s) => (
+                <span key={s} className="rounded-md border border-white/[0.08] bg-white/[0.03] px-2 py-0.5 font-mono text-[11.5px] text-mute">{s}</span>
+              ))}
+            </div>
+          </motion.div>
         </div>
+
+        <motion.div
+          className="relative mt-6 lg:mt-0"
+          initial={{ opacity: 0, scale: 0.94 }}
+          animate={ready ? { opacity: 1, scale: 1 } : {}}
+          transition={{ delay: 0.2, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {ready && <HeroVisual />}
+          {!ready && <div className="h-[460px]" />}
+          <motion.div
+            className="glass absolute left-[2%] top-[-2%] z-20 hidden items-center gap-2 rounded-xl px-3 py-2 text-[12.5px] md:flex"
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <span className="grid h-5 w-5 place-items-center rounded-full bg-mint/15 text-mint"><Check size={12} /></span>
+            Kept · ready to post
+          </motion.div>
+          <motion.div
+            className="glass absolute bottom-[8%] right-[-1%] z-20 hidden items-center gap-2 rounded-xl px-3 py-2 font-mono text-[11.5px] text-mute md:flex"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          >
+            <Sparkles size={13} className="text-amber" /> 5 clips · 2:41:07 VOD
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
@@ -296,11 +326,13 @@ function Footer() {
 }
 
 export function App() {
+  const [ready, setReady] = useState(false);
   return (
     <>
+      <Loader onDone={() => setReady(true)} />
       <Nav />
       <main>
-        <Hero />
+        <Hero ready={ready} />
         <How />
         <Features />
         <Install />
