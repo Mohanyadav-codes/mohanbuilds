@@ -655,7 +655,7 @@ export function Signal() {
                 >
                   <span className="min-w-0">
                     <span className="block font-mono text-[11.5px] text-mute">email · click to write</span>
-                    <span className="mt-1.5 block text-[clamp(19px,3.3vw,42px)] font-semibold leading-tight tracking-[-0.03em] [overflow-wrap:anywhere]">{person.email}</span>
+                    <span className="mt-1.5 block text-[clamp(19px,3.3vw,42px)] font-semibold leading-tight tracking-[-0.03em]">{person.email.split("@")[0]}<wbr />@{person.email.split("@")[1]}</span>
                   </span>
                   <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white text-bg transition group-hover:scale-110 md:h-14 md:w-14">
                     <Mail className="h-5 w-5" />
