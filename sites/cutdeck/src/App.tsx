@@ -21,32 +21,75 @@ function DownloadButton({ big = false }: { big?: boolean }) {
   );
 }
 
+const LINKS = [
+  { id: "how", label: "How it works" },
+  { id: "features", label: "Features" },
+  { id: "install", label: "Install" },
+  { id: "faq", label: "FAQ" },
+];
+
+/** Full-width and open at the top; a floating glass pill once you scroll, with the current section lit. */
 function Nav() {
   const [solid, setSolid] = useState(false);
+  const [active, setActive] = useState("");
+  const [progress, setProgress] = useState(0);
   useEffect(() => {
-    const on = () => setSolid(window.scrollY > 30);
+    const on = () => {
+      const y = window.scrollY;
+      setSolid(y > 30);
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(max > 0 ? Math.min(1, y / max) : 0);
+      let cur = "";
+      for (const l of LINKS) {
+        const el = document.getElementById(l.id);
+        if (el && el.getBoundingClientRect().top < window.innerHeight * 0.4) cur = l.id;
+      }
+      setActive(cur);
+    };
+    on();
     window.addEventListener("scroll", on, { passive: true });
-    return () => window.removeEventListener("scroll", on);
+    window.addEventListener("resize", on);
+    return () => {
+      window.removeEventListener("scroll", on);
+      window.removeEventListener("resize", on);
+    };
   }, []);
   return (
-    <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${solid ? "border-b border-white/[0.06] bg-ink-950/80 backdrop-blur-xl" : ""}`}>
-      <div className="mx-auto flex h-16 max-w-[1240px] items-center justify-between px-6">
+    <header className={`fixed inset-x-0 top-0 z-50 px-3 transition-[padding] duration-500 ${solid ? "pt-3" : "pt-0"}`}>
+      <div
+        className={`relative mx-auto flex items-center justify-between overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          solid
+            ? "h-14 max-w-[940px] rounded-2xl border border-white/10 bg-ink-900/70 pl-3 pr-2 shadow-[0_18px_50px_-20px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl"
+            : "h-[72px] max-w-[1240px] border border-transparent px-3"
+        }`}
+      >
         <a href="#" className="flex items-center gap-2.5">
-          <img src="/icon.png" alt="" className="h-8 w-8 rounded-lg" />
+          <img src="/icon.png" alt="" className={`rounded-lg transition-all duration-500 ${solid ? "h-7 w-7" : "h-8 w-8"}`} />
           <span className="font-display text-[19px] font-bold tracking-tight">cutdeck</span>
+          <span className={`rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 font-mono text-[10.5px] text-mute transition-all duration-300 max-sm:hidden ${solid ? "w-0 border-0 px-0 opacity-0" : "opacity-100"}`}>
+            v{release.version}
+          </span>
         </a>
-        <nav className="hidden items-center gap-8 text-[14px] text-mute md:flex">
-          <a href="#how" className="hover:text-paper">How it works</a>
-          <a href="#features" className="hover:text-paper">Features</a>
-          <a href="#install" className="hover:text-paper">Install</a>
-          <a href="#faq" className="hover:text-paper">FAQ</a>
+        <nav className={`hidden items-center gap-1 rounded-xl p-1 text-[13.5px] md:flex ${solid ? "" : "border border-white/[0.07] bg-white/[0.03]"}`}>
+          {LINKS.map((l) => (
+            <a key={l.id} href={`#${l.id}`} className={`relative rounded-lg px-3.5 py-1.5 transition-colors ${active === l.id ? "text-paper" : "text-mute hover:text-paper"}`}>
+              {active === l.id && (
+                <motion.span layoutId="nav-active" className="absolute inset-0 rounded-lg bg-coral/[0.14] ring-1 ring-coral/30" transition={{ type: "spring", stiffness: 380, damping: 32 }} />
+              )}
+              <span className="relative">{l.label}</span>
+            </a>
+          ))}
         </nav>
         <DownloadButton />
+        {/* Reading progress along the bottom edge of the pill. */}
+        <span
+          className={`pointer-events-none absolute bottom-0 left-0 h-px bg-gradient-to-r from-coral to-amber transition-opacity duration-300 ${solid ? "opacity-100" : "opacity-0"}`}
+          style={{ width: `${progress * 100}%` }}
+        />
       </div>
     </header>
   );
 }
-
 const SOURCES = ["YouTube", "Kick", "Twitch", "MP4"];
 
 function Hero({ ready }: { ready: boolean }) {
