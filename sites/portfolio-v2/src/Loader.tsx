@@ -1,43 +1,161 @@
-import { useEffect, useRef, useState } from "react";
-import { motion } from "motion/react";
-import { BAT, BAT_PATH } from "./Bat";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { BAT } from "./Bat";
+import { hash } from "./lib";
 
-const BOOT = 2300; // ms of power-on test before the dive
-const ease = [0.76, 0, 0.24, 1] as const;
-const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-/* 44 pins, 11 a side, in a 600-unit box. The first 17 (the AI stack) run lime. */
-const legs = Array.from({ length: 44 }, (_, idx) => ({ s: Math.floor(idx / 11), p: 180 + 24 * (idx % 11), idx }));
-
-/**
- * Power-on self test. A chip draws itself, its pins come up and the supply ramps to 3.3 V.
- * Then the bat signal lights on the die and the camera dives through the bat into the page.
+/*
+ * Loader: `git clone` of Mohan's own history.
+ * The command types itself, then the commit graph grows upward from "first line of code" to HEAD,
+ * branches fork off and merge back. At the end every branch fades away and the main line and the
+ * HEAD commit slide into place as the page's own commit graph.
  */
+
+const LIME = "#c8ff3d";
+const CUT = "#ff6b5b";
+const ARC = "#7aa2ff";
+const SUN = "#ffbe55";
+
+type Ref = { t: string; c: string };
+type Row = {
+  msg?: string;
+  redact?: number[];
+  lane?: 0 | 1;
+  c?: string;
+  root?: boolean;
+  head?: boolean;
+  tip?: boolean;
+  fork?: { c: string; dashed?: boolean };
+  merge?: { c: string };
+  pass?: { c: string; dashed?: boolean };
+  refs?: Ref[];
+};
+
+// Oldest first.
+const ROWS: Row[] = [
+  { msg: "init: first line of code", root: true, refs: [{ t: "tag: class-9", c: SUN }] },
+  { msg: "learn: C++, Python, SQL" },
+  { msg: "feat: vision attendance · OpenCV + Flask" },
+  { msg: "feat: api ninja · a fast API client" },
+  { msg: "feat: jester ai · an agent with jokes" },
+  { msg: "feat: gito · chat with any GitHub repo", fork: { c: CUT } },
+  { lane: 1, c: CUT, msg: "cutdeck: find the moments worth posting" },
+  { lane: 1, c: CUT, msg: "cutdeck: reframe to vertical, add captions" },
+  { msg: "Merge branch 'feat/cutdeck'", merge: { c: CUT }, refs: [{ t: "cutdeck · live", c: CUT }] },
+  { msg: "chore: B.Tech, 3rd year · DTU", fork: { c: ARC } },
+  { lane: 1, c: ARC, msg: "arclor: read a website, write the script" },
+  { lane: 1, c: ARC, msg: "arclor: animate it, edit with prompts" },
+  { msg: "Merge branch 'feat/arclor'", merge: { c: ARC }, fork: { c: BAT, dashed: true }, refs: [{ t: "arclor · live", c: ARC }] },
+  { lane: 1, c: BAT, redact: [64, 22, 90] },
+  { msg: "film: how it was built · youtube", pass: { c: BAT, dashed: true } },
+  { lane: 1, c: BAT, tip: true, redact: [40, 70], refs: [{ t: "feat/classified", c: BAT }] },
+  { msg: "ship: mohanbuilds.com", head: true, refs: [{ t: "HEAD → main", c: LIME }, { t: "origin/main", c: "#ff6b5b" }] },
+];
+const N = ROWS.length;
+const sha = (r: Row, i: number) => (r.head ? hash("head") : hash(`${i}:${r.msg ?? "redacted"}`));
+const branchOf = (r: Row) => (r.lane ? (r.c === CUT ? "feat/cutdeck" : r.c === ARC ? "feat/arclor" : "feat/████") : "main");
+
+const CMD = "git clone git@github.com:Mohanyadav-codes/mohan.builds.git";
+const T_TYPE = 520;
+const T_ROWS = 640;
+const STEP = 92;
+const T_DONE = T_ROWS + N * STEP + 120;
+const T_LAND = T_DONE + 420;
+
+const H = 26; // row height
+const X0 = 11; // lane 0 x inside the graph cell
+const LW = 18; // lane spacing
+const X1 = X0 + LW;
+
+function Graph({ r }: { r: Row }) {
+  const y = H / 2;
+  const dash = (d?: boolean) => (d ? "3 3" : undefined);
+  return (
+    <svg width="60" height={H} className="shrink-0 overflow-visible" aria-hidden>
+      {/* main lane */}
+      {r.lane ? (
+        <line x1={X0} x2={X0} y1={0} y2={H} stroke={LIME} strokeWidth="2" />
+      ) : (
+        <line x1={X0} x2={X0} y1={r.head ? y : 0} y2={r.root ? y : H} stroke={LIME} strokeWidth="2" />
+      )}
+      {/* side lane passing through */}
+      {r.pass && <line x1={X1} x2={X1} y1={0} y2={H} stroke={r.pass.c} strokeWidth="2" strokeDasharray={dash(r.pass.dashed)} />}
+      {/* side lane commit */}
+      {r.lane === 1 && (
+        <line x1={X1} x2={X1} y1={r.tip ? y : 0} y2={H} stroke={r.c} strokeWidth="2" strokeDasharray={dash(r.c === BAT)} />
+      )}
+      {r.fork && (
+        <path d={`M${X0} ${y} C${X0} ${y - 8}, ${X1} ${y - 4}, ${X1} 0`} fill="none" stroke={r.fork.c} strokeWidth="2" strokeDasharray={dash(r.fork.dashed)} />
+      )}
+      {r.merge && <path d={`M${X1} ${H} C${X1} ${H - 6}, ${X0} ${y + 7}, ${X0} ${y}`} fill="none" stroke={r.merge.c} strokeWidth="2" />}
+      {/* the commit */}
+      <circle
+        id={r.head ? "ld-head" : undefined}
+        cx={r.lane ? X1 : X0}
+        cy={y}
+        r={r.head ? 6 : 4.5}
+        fill={r.head ? LIME : "#0b0b0a"}
+        stroke={r.lane ? r.c : LIME}
+        strokeWidth="2"
+      />
+    </svg>
+  );
+}
+
+function Line({ r, i }: { r: Row; i: number }) {
+  return (
+    <div className="flex items-center gap-3 whitespace-nowrap font-mono text-[12px] md:text-[13px]" style={{ height: H }}>
+      <Graph r={r} />
+      <span style={{ color: SUN }}>{sha(r, i)}</span>
+      {r.refs && (
+        <span className="hidden sm:inline">
+          <span className="text-sky">(</span>
+          {r.refs.map((f, k) => (
+            <span key={f.t}>
+              {k > 0 && <span className="text-sky">, </span>}
+              <span className="font-semibold" style={{ color: f.c }}>
+                {f.t}
+              </span>
+            </span>
+          ))}
+          <span className="text-sky">)</span>
+        </span>
+      )}
+      {r.redact ? (
+        <span className="flex gap-1.5">
+          {r.redact.map((w, k) => (
+            <span key={k} className="inline-block h-[11px] rounded-[2px]" style={{ width: w, background: `${BAT}40` }} />
+          ))}
+        </span>
+      ) : (
+        <span className="truncate text-text/80">{r.msg}</span>
+      )}
+    </div>
+  );
+}
+
 export function Loader({ onReveal, onDone }: { onReveal: () => void; onDone: () => void }) {
-  const [phase, setPhase] = useState<"boot" | "dive" | "out">("boot");
-  const [prog, setProg] = useState(0);
+  const [e, setE] = useState(0);
+  const [land, setLand] = useState<null | { from: DOMRect; to: DOMRect | null }>(null);
+  const t0 = useRef(0);
   const raf = useRef(0);
 
   useEffect(() => {
-    if (reduced()) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       onReveal();
       onDone();
       return;
     }
     const html = document.documentElement;
     html.style.overflow = "hidden";
-    const t0 = performance.now();
+    t0.current = performance.now();
     const tick = (now: number) => {
-      const k = Math.min(1, (now - t0) / BOOT);
-      setProg(k);
-      if (k < 1) raf.current = requestAnimationFrame(tick);
-      else setPhase((p) => (p === "boot" ? "dive" : p));
+      const el = now - t0.current;
+      setE(el);
+      if (el < T_LAND) raf.current = requestAnimationFrame(tick);
     };
     raf.current = requestAnimationFrame(tick);
     const skip = () => {
-      cancelAnimationFrame(raf.current);
-      setProg(1);
-      setPhase((p) => (p === "boot" ? "dive" : p));
+      if (performance.now() - t0.current < T_DONE) t0.current = performance.now() - T_DONE;
     };
     window.addEventListener("keydown", skip);
     window.addEventListener("pointerdown", skip);
@@ -50,184 +168,144 @@ export function Loader({ onReveal, onDone }: { onReveal: () => void; onDone: () 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (phase === "dive") {
-      const t = setTimeout(() => setPhase("out"), 900);
-      return () => clearTimeout(t);
-    }
-    if (phase === "out") {
-      document.documentElement.style.overflow = "";
-      onReveal();
-      const t = setTimeout(onDone, 750);
-      return () => clearTimeout(t);
-    }
+  // Hand-off: measure where HEAD is now and where the page's HEAD dot waits.
+  useLayoutEffect(() => {
+    if (e < T_LAND || land) return;
+    const from = document.getElementById("ld-head")?.getBoundingClientRect();
+    const dot = document.getElementById("head-dot");
+    const to = dot && dot.offsetParent ? dot.getBoundingClientRect() : null;
+    document.documentElement.style.overflow = "";
+    onReveal();
+    setLand({ from: from ?? new DOMRect(-99, -99, 0, 0), to });
+    setTimeout(onDone, 1250);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase]);
+  }, [e]);
 
-  const volts = (3.3 * (1 - Math.pow(1 - prog, 3))).toFixed(2);
-  const lit = prog > 0.84;
-  const lines: [number, string, string, boolean?][] = [
-    [0.06, "vcc", `${volts} V`],
-    [0.24, "git fetch origin", "done"],
-    [0.42, "pins", `${String(Math.min(44, Math.round(prog * 64))).padStart(2, "0")}/44`],
-    [0.6, "branches", "arclor · cutdeck · ▇▇▇"],
-    [0.84, "signal", "lit", true],
-  ];
-  const diving = phase !== "boot";
+  const typed = CMD.slice(0, Math.round(Math.min(1, e / T_TYPE) * CMD.length));
+  const n = Math.max(0, Math.min(N, Math.floor((e - T_ROWS) / STEP) + 1));
+  const k = n / N;
+  const objs = Math.round(k * 701);
+  const done = e >= T_DONE;
+  const shown = ROWS.slice(0, n).map((r, i) => ({ r, i })).reverse();
+  const top = shown[0];
+  const bar = 28;
+  const fill = Math.round(k * bar);
+
+  const cx = land ? land.from.x + land.from.width / 2 : 0;
+  const cy = land ? land.from.y + land.from.height / 2 : 0;
+  const tx = land?.to ? land.to.x + land.to.width / 2 : cx;
+  const ty = land?.to ? land.to.y + land.to.height / 2 : cy;
 
   return (
     <motion.div
-      className="fixed inset-0 z-[100] overflow-hidden bg-bg"
+      className="fixed inset-0 z-[100] overflow-hidden"
       role="status"
       aria-label="Loading"
-      animate={{ opacity: phase === "out" ? 0 : 1 }}
-      transition={{ duration: 0.7, ease: "easeOut" }}
+      initial={false}
+      animate={{ opacity: 1 }}
     >
-      {/* Board grid. */}
-      <div
-        className="absolute inset-0 opacity-100"
-        style={{
-          backgroundImage:
-            "linear-gradient(#ffffff08 1px, transparent 1px), linear-gradient(90deg, #ffffff08 1px, transparent 1px), linear-gradient(#ffffff04 1px, transparent 1px), linear-gradient(90deg, #ffffff04 1px, transparent 1px)",
-          backgroundSize: "120px 120px, 120px 120px, 24px 24px, 24px 24px",
-        }}
-      />
+      {/* Backdrop fades once HEAD has landed. */}
+      <motion.div className="absolute inset-0 bg-bg" animate={{ opacity: land ? 0 : 1 }} transition={{ delay: land ? 0.55 : 0, duration: 0.6 }} />
 
-      <motion.div animate={{ opacity: diving ? 0 : 1 }} transition={{ duration: 0.3 }} className="absolute inset-0">
-        <div className="absolute inset-4 rounded-xl border border-line md:inset-6" />
-        <div className="absolute left-7 right-7 top-7 flex justify-between font-mono text-[11px] text-dim md:left-10 md:right-10 md:top-10">
-          <span>
-            <span className="text-lime">mohan.builds</span> · power-on self test
-          </span>
-          <span className="hidden sm:inline">
-            <span className="text-sky">HEAD</span> → <span className="text-add">main</span>
-          </span>
-        </div>
-
-        {/* Self-test log. */}
-        <div className="absolute bottom-24 left-7 w-[min(380px,calc(100%-56px))] font-mono text-[12px] leading-[1.95] md:bottom-28 md:left-10">
-          {lines.map(([at, k, v, y]) =>
-            prog >= at ? (
-              <div key={k} className="flex items-baseline gap-2">
-                <span className="text-lime">$</span>
-                <span className="text-text/90">{k}</span>
-                <span className="flex-1 translate-y-[-4px] border-b border-dotted border-white/15" />
-                <span style={y ? { color: BAT } : undefined} className={y ? "font-semibold" : "text-mute"}>
-                  {v}
-                </span>
-                <span className="w-6 text-right text-add">ok</span>
+      <motion.div className="absolute inset-0" animate={{ opacity: land ? 0 : 1 }} transition={{ duration: 0.35 }}>
+        <div className="relative mx-auto h-full max-w-[1400px] px-5 md:pl-[88px] md:pr-8">
+          {/* Command. */}
+          <div className="pt-20 font-mono text-[12.5px] leading-6 md:pt-24">
+            <div className="text-mute">
+              <span className="text-lime">$</span> <span className="text-text">{typed}</span>
+              {e < T_ROWS && <span className="ml-0.5 inline-block h-[1.05em] w-[0.55em] translate-y-[3px] bg-lime" />}
+            </div>
+            {e > T_TYPE + 60 && <div className="text-dim">Cloning into 'mohan.builds'...</div>}
+            {e > T_ROWS && <div className="text-dim">remote: Enumerating objects: 701, done.</div>}
+            {e > T_ROWS && (
+              <div className="text-dim">
+                Receiving objects: <span className="text-text">{String(Math.round(k * 100)).padStart(3, " ")}%</span> ({objs}/701)
+                {done && ", done."}
               </div>
-            ) : null,
+            )}
+            {done && (
+              <div className="text-dim">
+                Resolving deltas: 100% (<span className="text-text">312/312</span>), done.
+              </div>
+            )}
+          </div>
+
+          {/* The graph, growing upward. */}
+          <div className="absolute inset-x-5 top-[38%] h-[52%] overflow-hidden [mask-image:linear-gradient(black_70%,transparent)] md:left-[28px] md:right-8">
+            <div className="mb-2 font-mono text-[11px] text-dim md:ml-[60px]">
+              <span className="text-lime">$</span> git log --graph --oneline --all
+            </div>
+            <AnimatePresence initial={false}>
+              {shown.map(({ r, i }) => (
+                <motion.div
+                  key={i}
+                  initial={{ height: 0, opacity: 0, x: -10 }}
+                  animate={{ height: H, opacity: 1, x: 0 }}
+                  transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                  className="overflow-hidden"
+                >
+                  <Line r={r} i={i} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+
+          {/* Big readout: the commit being written right now. */}
+          {top && (
+            <div className="absolute right-8 top-[38%] hidden text-right lg:block">
+              <div className="font-mono text-[11px] text-dim">
+                {top.r.head ? "HEAD is now at" : "writing commit"} · <span style={{ color: top.r.lane ? top.r.c : LIME }}>{branchOf(top.r)}</span>
+              </div>
+              <div className="mt-2">
+                  <motion.div
+                    key={top.i}
+                    initial={{ y: "45%", opacity: 0, filter: "blur(6px)" }}
+                    animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                    transition={{ duration: 0.18, ease: "easeOut" }}
+                    className="font-mono text-[clamp(64px,8.5vw,136px)] font-extrabold leading-none tracking-[-0.07em]"
+                    style={{ color: top.r.head ? LIME : "#ecebe4", textShadow: top.r.head ? "0 0 40px rgb(200 255 61 / 0.4)" : undefined }}
+                  >
+                    {sha(top.r, top.i)}
+                  </motion.div>
+              </div>
+              <div className="mt-3 font-mono text-[12px] text-mute">
+                {String(n).padStart(2, "0")}/{N} commits
+              </div>
+            </div>
           )}
-        </div>
 
-        {/* Supply readout. */}
-        <div className="absolute right-7 top-16 text-right md:bottom-24 md:right-10 md:top-auto">
-          <div className="font-mono text-[11px] text-dim">supply</div>
-          <div className="font-mono text-[clamp(56px,10vw,136px)] font-extrabold leading-[0.85] tracking-[-0.07em] tabular-nums">
-            {volts}
-            <span className="text-lime lime-glow">V</span>
-          </div>
-        </div>
-
-        {/* Ruler. */}
-        <div className="absolute bottom-7 left-7 right-7 md:bottom-10 md:left-10 md:right-10">
-          <div className="flex h-3 items-end justify-between">
-            {Array.from({ length: 51 }, (_, i) => (
-              <span
-                key={i}
-                className="w-px"
-                style={{ height: i % 10 === 0 ? 12 : i % 5 === 0 ? 8 : 5, background: i / 50 <= prog ? "#c8ff3d" : "#ffffff22" }}
-              />
-            ))}
-          </div>
-          <div className="mt-1.5 flex justify-between font-mono text-[10px] text-dim">
-            <span>0</span>
-            <span className="hidden sm:inline">press any key to skip</span>
-            <span>{Math.round(prog * 100)}%</span>
+          {/* ASCII progress. */}
+          <div className="absolute inset-x-5 bottom-7 flex items-center justify-between gap-4 font-mono text-[11.5px] md:bottom-9 md:left-[88px] md:right-8">
+            <span className="truncate">
+              <span className="text-lime">{"█".repeat(fill)}</span>
+              <span className="text-line">{"░".repeat(bar - fill)}</span>
+              <span className="ml-3 text-mute">{done ? "checked out main" : `${(k * 8.42).toFixed(2)} MiB | 8.42 MiB/s`}</span>
+            </span>
+            <span className="hidden text-dim sm:inline">press any key to skip</span>
           </div>
         </div>
       </motion.div>
 
-      {/* The chip. The bat's body sits dead centre, so scaling about the centre flies through it. */}
-      <motion.div
-        className="absolute left-1/2 top-[44%] h-[min(360px,64vw)] w-[min(360px,64vw)] -translate-x-1/2 -translate-y-1/2"
-        animate={diving ? { scale: 260 } : { scale: 1 }}
-        transition={diving ? { duration: 0.9, ease: [0.8, 0, 0.9, 0.2] } : { duration: 0 }}
-      >
-        <svg viewBox="0 0 600 600" className="h-full w-full overflow-visible">
-          {legs.map(({ s, p, idx }) => (
-            <g key={idx} transform={`rotate(${-90 * s} 300 300)`}>
-              <motion.line
-                x1="130"
-                x2="-760"
-                y1={p}
-                y2={p}
-                stroke={idx < 17 ? "#c8ff3d" : "#ecebe4"}
-                strokeWidth="1.6"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: idx < 17 ? 0.55 : 0.12 }}
-                transition={{ delay: 0.6 + idx * 0.016, duration: 1.2, ease: "easeOut" }}
-              />
-              <motion.rect
-                x="104"
-                y={p - 5}
-                width="26"
-                height="10"
-                rx="1"
-                fill={idx < 17 ? "#c8ff3d" : "#8a887f"}
-                initial={{ scaleX: 0, opacity: 0 }}
-                animate={{ scaleX: 1, opacity: 1 }}
-                style={{ transformOrigin: "130px center", transformBox: "fill-box" }}
-                transition={{ delay: 0.5 + idx * 0.016, duration: 0.3 }}
-              />
-            </g>
-          ))}
-          <motion.rect
-            x="130"
-            y="130"
-            width="340"
-            height="340"
-            rx="12"
-            fill="#141412"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: prog > 0.66 ? 1 : 0 }}
-            transition={{ duration: 0.35 }}
+      {/* Hand-off: main line and HEAD become the page's commit graph. */}
+      {land && (
+        <>
+          {land.to && (
+            <motion.div
+              className="absolute bottom-0 top-0 w-[2px] -translate-x-1/2"
+              style={{ left: tx }}
+              initial={{ backgroundColor: LIME, opacity: 1 }}
+              animate={{ backgroundColor: "#262521", opacity: [1, 1, 0] }}
+              transition={{ duration: 1.1, times: [0, 0.6, 1] }}
+            />
+          )}
+          <motion.div
+            className="absolute left-0 top-0 h-4 w-4 rounded-full bg-lime shadow-[0_0_0_6px_#0b0b0a,0_0_26px_rgba(200,255,61,0.8)]"
+            initial={{ x: cx - 8, y: cy - 8, scale: 0.8 }}
+            animate={{ x: tx - 8, y: ty - 8, scale: 1, opacity: land.to ? [1, 1, 0] : [1, 0] }}
+            transition={{ duration: 0.75, ease: [0.65, 0, 0.35, 1], opacity: { duration: 1.2, times: land.to ? [0, 0.8, 1] : [0, 1] } }}
           />
-          <motion.path
-            d="M142,130 H458 Q470,130 470,142 V458 Q470,470 458,470 H142 Q130,470 130,458 V142 Q130,130 142,130 Z"
-            fill="none"
-            stroke="#ecebe4"
-            strokeOpacity="0.85"
-            strokeWidth="2.5"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 0.95, ease }}
-          />
-          <motion.circle cx="156" cy="156" r="7" fill="#c8ff3d" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.85, type: "spring" }} />
-          <motion.g initial={{ opacity: 0 }} animate={{ opacity: prog > 0.72 ? 1 : 0 }} fontFamily="JetBrains Mono Variable, monospace" textAnchor="middle">
-            <text x="300" y="200" fontSize="13" letterSpacing="4" fill="#ecebe480">
-              MOHAN YADAV
-            </text>
-            <text x="300" y="428" fontSize="26" fontWeight="800" letterSpacing="-1" fill="#ecebe4">
-              MY-2026
-            </text>
-          </motion.g>
-          {/* The signal on the die. */}
-          <motion.g
-            initial={{ opacity: 0, scale: 0.6 }}
-            animate={lit ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.6 }}
-            transition={{ type: "spring", stiffness: 260, damping: 18 }}
-            style={{ transformOrigin: "300px 300px" }}
-          >
-            <ellipse cx="300" cy="300" rx="128" ry="82" fill={BAT} opacity="0.18" filter="blur(14px)" />
-            <g transform="translate(300 300) scale(0.98) translate(-100 -56)">
-              <ellipse cx="100" cy="53" rx="112" ry="72" fill={BAT} stroke="#0b0b0a" strokeWidth="5" />
-              <path d={BAT_PATH} fill="#0b0b0a" transform="translate(100 53) scale(0.86) translate(-100 -53)" />
-            </g>
-          </motion.g>
-        </svg>
-      </motion.div>
+        </>
+      )}
     </motion.div>
   );
 }

@@ -51,6 +51,7 @@ export function Hero({ ready }: { ready: boolean }) {
       <div className="relative">
         <motion.span
           {...show(0, 0)}
+          id="head-dot"
           className="absolute -left-[57px] top-[6px] hidden h-4 w-4 rounded-full bg-lime shadow-[0_0_0_6px_#0b0b0a,0_0_26px_rgba(200,255,61,0.8)] md:block"
         />
         <motion.div {...show(0.05)} className="font-mono text-[12.5px] leading-6">
