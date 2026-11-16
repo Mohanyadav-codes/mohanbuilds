@@ -15,7 +15,6 @@ export const sections = [
   { id: "log", file: "git log", label: "Projects" },
   { id: "deps", file: "package.json", label: "Stack" },
   { id: "readme", file: "README.md", label: "About" },
-  { id: "push", file: "git push", label: "Pull request" },
   { id: "signal", file: "signal.sh", label: "Contact" },
 ] as const;
 

@@ -1,9 +1,9 @@
 import { AnimatePresence, motion, useMotionTemplate, useMotionValue } from "motion/react";
-import { ArrowUpRight, ChevronRight, Lock } from "lucide-react";
+import { ArrowUpRight, Check, ChevronRight, Copy, Lock, Mail } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { person, products, projects, tracks, type Product } from "@shared/content";
 import { Contrib } from "./Contrib";
-import { BatLogo, Skyline, SignalOval } from "./Bat";
+import { BAT_PATH, BatLogo, Skyline } from "./Bat";
 import { BranchIcon } from "./Chrome";
 import { ago, go, hash, useLastPush } from "./lib";
 
@@ -523,91 +523,6 @@ export function Readme() {
   );
 }
 
-/* ------------------------------------------------------------------ */
-/* git push: contact.                                                  */
-/* ------------------------------------------------------------------ */
-export function Push() {
-  const [from, setFrom] = useState("");
-  const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
- const href = `mailto:${person.email}?subject=${encodeURIComponent(title || "Hello from mohanbuilds.space")}&body=${encodeURIComponent(
-    body + (from ? `\n\n— ${from}` : ""),
-  )}`;
-  return (
-    <section id="push" className="scroll-mt-20 pb-16 pt-28 md:pt-36">
-      <Head id="push" cmd="git push origin hello" title={<>Open a <span className="font-serif font-normal italic text-lime">pull request.</span></>}>
-        Got an idea? Write it here. It opens in your email app.
-      </Head>
-
-      <div className="grid gap-6 lg:grid-cols-[1.35fr_1fr]">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            window.location.href = href;
-          }}
-          className="rounded-2xl border border-line bg-panel"
-        >
-          <div className="flex flex-wrap items-center gap-2 border-b border-line px-5 py-3 font-mono text-[11.5px]">
-            <span className="rounded-md bg-white/5 px-2 py-0.5 text-mute">base: mohan/inbox</span>
-            <span className="text-dim">←</span>
-            <span className="rounded-md bg-lime/10 px-2 py-0.5 text-lime">compare: you/idea</span>
-            <span className="ml-auto text-add">✓ Able to merge</span>
-          </div>
-          <div className="space-y-4 p-5 md:p-6">
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Title: e.g. Let's build an AI tool for…"
-              className="w-full rounded-lg border border-line bg-bg px-4 py-3 text-[15px] outline-none transition placeholder:text-dim focus:border-lime/60"
-            />
-            <textarea
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              rows={6}
-              placeholder="Describe the idea. What should it do, and who is it for?"
-              className="w-full resize-none rounded-lg border border-line bg-bg px-4 py-3 text-[15px] leading-relaxed outline-none transition placeholder:text-dim focus:border-lime/60"
-            />
-            <div className="flex flex-wrap items-center gap-3">
-              <input
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
-                placeholder="Your name"
-                className="min-w-0 flex-1 rounded-lg border border-line bg-bg px-4 py-3 text-[15px] outline-none transition placeholder:text-dim focus:border-lime/60"
-              />
-              <button type="submit" className="rounded-lg bg-lime px-5 py-3 font-mono text-[13px] font-bold text-bg transition hover:brightness-110 active:scale-[0.98]">
-                Create pull request
-              </button>
-            </div>
-          </div>
-        </form>
-
-        <div className="flex flex-col justify-between rounded-2xl border border-line bg-panel p-6 font-mono text-[13px]">
-          <div>
-            <div className="text-[11.5px] text-mute">
-              <span className="text-lime">$</span> cat CONTRIBUTING.md
-            </div>
-            <div className="mt-5 text-text"># Good first issues</div>
-            <ul className="mt-3 space-y-2.5 text-text/80">
-              <li><span className="mr-2 text-add">+</span>an AI tool you want built</li>
-              <li><span className="mr-2 text-add">+</span>a product video for your launch</li>
-              <li><span className="mr-2 text-add">+</span>a build or a video we make together</li>
-            </ul>
-          </div>
-          <button
-            onClick={lightSignal}
-            className="group mt-8 flex items-center gap-3 rounded-xl border border-bat/25 bg-bat/[0.04] px-4 py-3.5 text-left transition hover:border-bat/70 hover:bg-bat/[0.08]"
-          >
-            <BatLogo className="h-3.5 w-8 shrink-0 text-bat transition group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
-            <span className="text-mute">
-              Rather DM? <span className="text-bat">Light the signal</span> <span className="inline-block transition group-hover:translate-y-0.5">↓</span>
-            </span>
-          </button>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 /** Scroll to the footer and light the signal. */
 export function lightSignal() {
   go("signal");
@@ -617,6 +532,35 @@ export function lightSignal() {
 /* ------------------------------------------------------------------ */
 /* Footer: light the signal to open the channels.                      */
 /* ------------------------------------------------------------------ */
+/** The emblem: a black bat with white light breathing behind it. Lit, the light floods out. */
+function Emblem({ lit }: { lit: boolean }) {
+  return (
+    <div className="relative grid aspect-[2/1] w-[min(72vw,360px)] place-items-center">
+      {/* Halo: breathes when idle, blooms when lit. */}
+      <motion.div
+        className="absolute -inset-[45%] rounded-full"
+        style={{ background: "radial-gradient(closest-side, rgba(255,255,255,0.5), rgba(255,255,255,0.14) 50%, transparent)", filter: "blur(10px)" }}
+        animate={lit ? { scale: 1.25, opacity: 1 } : { scale: [0.78, 0.9, 0.78], opacity: [0.35, 0.55, 0.35] }}
+        transition={lit ? { duration: 0.9, ease } : { duration: 3.4, repeat: Infinity, ease: "easeInOut" }}
+      />
+      {/* The disc of light the bat sits in. No outline, just a soft edge. */}
+      <motion.div
+        className="absolute -inset-x-[9%] -inset-y-[22%] rounded-[50%]"
+        style={{
+          background:
+            "radial-gradient(ellipse at center, #ffffff 0%, rgba(255,255,255,0.95) 42%, rgba(255,255,255,0.45) 62%, rgba(255,255,255,0) 72%)",
+        }}
+        initial={false}
+        animate={lit ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.6 }}
+        transition={{ duration: 0.7, ease }}
+      />
+      <svg viewBox="0 8 200 92" className="relative w-[86%] drop-shadow-[0_0_1px_rgba(255,255,255,0.4)]" aria-hidden>
+        <path d={BAT_PATH} fill="#050505" />
+      </svg>
+    </div>
+  );
+}
+
 export function Signal() {
   const [lit, setLit] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -642,26 +586,27 @@ export function Signal() {
 
   return (
     <section id="signal" className="relative scroll-mt-12 overflow-hidden pt-28 md:pt-36">
-      {/* Night sky, a shade lighter than the page so the beam has something to hit. */}
       <div className="absolute inset-0 bg-gradient-to-b from-bg via-[#0e0e0c] to-[#121210]" />
+      {/* Light spreading out from the emblem across the sky. */}
       <motion.div
         className="pointer-events-none absolute inset-0"
-        animate={{ opacity: lit ? 1 : 0 }}
-        transition={{ duration: 0.8 }}
-        style={{ background: "radial-gradient(ellipse 55% 40% at 50% 34%, rgba(255,255,255,0.14), transparent 70%)" }}
+        style={{ background: "radial-gradient(ellipse 60% 45% at 50% 40%, rgba(255,255,255,0.16), transparent 72%)" }}
+        initial={false}
+        animate={{ clipPath: lit ? "circle(140% at 50% 40%)" : "circle(0% at 50% 40%)", opacity: lit ? 1 : 0 }}
+        transition={{ duration: 1.1, ease }}
       />
 
-      {/* The beam, from a rooftop up to the emblem. */}
+      {/* The V of light from the rooftop lamp up to the emblem. */}
       <motion.div
-        className="pointer-events-none absolute bottom-[11.6vw] left-1/2 h-[82%] w-[70vw] max-w-[1100px] origin-bottom -translate-x-1/2"
+        className="pointer-events-none absolute bottom-[11.6vw] left-1/2 h-[82%] w-[72vw] max-w-[1100px] origin-bottom -translate-x-1/2"
         style={{
-          background: "linear-gradient(to top, rgba(255,255,255,0.42), rgba(255,255,255,0.08) 70%, transparent)",
+          background: "linear-gradient(to top, rgba(255,255,255,0.45), rgba(255,255,255,0.1) 70%, transparent)",
           clipPath: "polygon(48.5% 100%, 51.5% 100%, 76% 0, 24% 0)",
           filter: "blur(10px)",
         }}
-        initial={{ scaleY: 0, opacity: 0 }}
-        animate={lit ? { scaleY: 1, opacity: [0, 1, 0.8, 1] } : { scaleY: 0, opacity: 0 }}
-        transition={{ duration: 0.9, ease }}
+        initial={false}
+        animate={lit ? { scaleY: 1, opacity: 1 } : { scaleY: 0, opacity: 0 }}
+        transition={{ duration: 0.9, ease, delay: lit ? 0.1 : 0 }}
       />
 
       <div className="relative z-10 mx-auto flex max-w-[1100px] flex-col items-center px-5 text-center">
@@ -676,9 +621,6 @@ export function Signal() {
           Light the{" "}
           <span className={`font-serif font-normal italic transition-all duration-700 ${lit ? "bat-glow text-bat" : "text-text/30"}`}>signal.</span>
         </h2>
-        <p className="mt-5 max-w-[46ch] text-[17px] leading-relaxed text-mute">
-          {lit ? "Pick a channel." : "Press the emblem."}
-        </p>
 
         <motion.button
           onClick={() => setLit((l) => !l)}
@@ -686,11 +628,11 @@ export function Signal() {
           whileTap={{ scale: 0.96 }}
           aria-pressed={lit}
           aria-label={lit ? "Turn the signal off" : "Light the signal"}
-          className={`group relative mt-12 rounded-full transition-[filter] duration-700 ${lit ? "drop-shadow-[0_0_60px_rgba(255,255,255,0.55)]" : "hover:drop-shadow-[0_0_24px_rgba(255,255,255,0.18)]"}`}
+          className="group relative mt-16"
         >
-          <SignalOval lit={lit} className="w-[min(64vw,280px)]" />
+          <Emblem lit={lit} />
           {!lit && (
-            <span className="absolute -bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[11px] text-dim transition group-hover:text-bat">
+            <span className="absolute -bottom-12 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[11px] text-dim transition group-hover:text-text">
               press to light · or hit <kbd className="text-mute">l</kbd>
             </span>
           )}
@@ -702,16 +644,32 @@ export function Signal() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              transition={{ delay: 0.35, duration: 0.6, ease }}
-              className="mt-14 w-full"
+              transition={{ delay: 0.4, duration: 0.6, ease }}
+              className="mt-20 w-full"
             >
-              <div className="mx-auto max-w-[640px] rounded-xl border border-line bg-panel/80 px-4 py-3 text-left font-mono text-[12px] leading-6 backdrop-blur">
-                <div className="text-mute">
-                  <span className="text-lime">$</span> git remote -v
-                </div>
-                <div className="text-dim">→ signal sent. {person.links.length + 1} channels open.</div>
+              {/* Email first, big: one click opens a new mail. */}
+              <div className="mx-auto flex max-w-[980px] flex-col gap-3 sm:flex-row">
+                <a
+                  href={`mailto:${person.email}?subject=${encodeURIComponent("Hello Mohan")}`}
+                  className="group flex min-w-0 flex-1 items-center justify-between gap-5 rounded-2xl border border-white/25 bg-white/[0.05] px-5 py-5 text-left shadow-[0_0_80px_-24px_rgba(255,255,255,0.45)] backdrop-blur transition hover:-translate-y-0.5 hover:border-white/70 hover:bg-white/[0.08] md:px-8 md:py-7"
+                >
+                  <span className="min-w-0">
+                    <span className="block font-mono text-[11.5px] text-mute">email · click to write</span>
+                    <span className="mt-1.5 block text-[clamp(19px,3.3vw,42px)] font-semibold leading-tight tracking-[-0.03em] [overflow-wrap:anywhere]">{person.email}</span>
+                  </span>
+                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white text-bg transition group-hover:scale-110 md:h-14 md:w-14">
+                    <Mail className="h-5 w-5" />
+                  </span>
+                </a>
+                <button
+                  onClick={copy}
+                  className="flex items-center justify-center gap-2 rounded-2xl border border-line bg-panel/85 px-6 py-4 font-mono text-[12.5px] text-mute transition hover:border-white/40 hover:text-text"
+                >
+                  {copied ? <Check className="h-4 w-4 text-add" /> : <Copy className="h-4 w-4" />}
+                  {copied ? "copied" : "copy"}
+                </button>
               </div>
-              <div className="mx-auto mt-4 grid max-w-[980px] grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+              <div className="mx-auto mt-3 grid max-w-[980px] grid-cols-2 gap-3 sm:grid-cols-5">
                 {person.links.map((l, i) => (
                   <motion.a
                     key={l.label}
@@ -720,27 +678,15 @@ export function Signal() {
                     rel="noopener"
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 + i * 0.06, ease }}
-                    className="group rounded-xl border border-line bg-panel/85 px-4 py-4 text-left backdrop-blur transition hover:-translate-y-0.5 hover:border-bat/60"
+                    transition={{ delay: 0.55 + i * 0.06, ease }}
+                    className="group rounded-xl border border-line bg-panel/85 px-4 py-4 text-left backdrop-blur transition hover:-translate-y-0.5 hover:border-white/50"
                   >
                     <div className="flex items-center justify-between text-[15px] font-semibold">
-                      {l.label} <ArrowUpRight className="h-3.5 w-3.5 text-dim transition group-hover:text-bat" />
+                      {l.label} <ArrowUpRight className="h-3.5 w-3.5 text-dim transition group-hover:text-text" />
                     </div>
                     <div className="mt-1 truncate font-mono text-[11.5px] text-mute">{l.handle}</div>
                   </motion.a>
                 ))}
-                <motion.button
-                  onClick={copy}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 + person.links.length * 0.06, ease }}
-                  className="group rounded-xl border border-bat/40 bg-bat/[0.06] px-4 py-4 text-left transition hover:-translate-y-0.5 hover:border-bat"
-                >
-                  <div className="flex items-center justify-between text-[15px] font-semibold text-bat">
-                    Email <span className="font-mono text-[10.5px] font-normal">{copied ? "copied" : "copy"}</span>
-                  </div>
-                  <div className="mt-1 truncate font-mono text-[11.5px] text-mute">{person.email}</div>
-                </motion.button>
               </div>
             </motion.div>
           )}

@@ -1,64 +1,112 @@
-import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion, useMotionValueEvent, useScroll, useSpring } from "motion/react";
+import { BookOpen, Braces, GitBranch, GitCommitHorizontal, Search } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { person } from "@shared/content";
 import { go, sections, useActiveSection, useClock } from "./lib";
 import { BatLogo } from "./Bat";
 
-/** Top bar styled like an editor's tab strip. */
+const tabIcon: Record<string, ReactNode> = {
+  branches: <GitBranch className="h-3.5 w-3.5" />,
+  log: <GitCommitHorizontal className="h-3.5 w-3.5" />,
+  deps: <Braces className="h-3.5 w-3.5" />,
+  readme: <BookOpen className="h-3.5 w-3.5" />,
+  signal: <BatLogo className="h-2 w-[18px]" />,
+};
+
+/** Floating top bar: transparent over the hero, a glass pill once you scroll. */
 export function TopBar({ onPalette }: { onPalette: () => void }) {
   const active = useActiveSection();
   const time = useClock();
-  const { scrollYProgress } = useScroll();
+  const { scrollY, scrollYProgress } = useScroll();
   const p = useSpring(scrollYProgress, { stiffness: 200, damping: 40 });
+  const [floating, setFloating] = useState(false);
+  useMotionValueEvent(scrollY, "change", (v) => setFloating(v > 24));
+  const signal = () => (go("signal"), setTimeout(() => window.dispatchEvent(new Event("signal:light")), 650));
+
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-line bg-bg/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-12 max-w-[1400px] items-center gap-4 px-4 md:px-6">
-        <button onClick={() => go("top")} className="flex shrink-0 items-center gap-2 font-mono text-[13px] font-semibold">
-          <Mark className="h-5 w-5" />
-          <span>mohan<span className="text-lime">.</span>builds</span>
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 px-3 pt-3 md:px-5">
+      <div
+        className={`pointer-events-auto relative mx-auto flex h-[54px] max-w-[1400px] items-center gap-3 rounded-2xl border px-2.5 transition-[background-color,border-color,box-shadow] duration-500 md:px-3 ${
+          floating
+            ? "border-white/[0.08] bg-[#0f0f0e]/75 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-xl"
+            : "border-transparent bg-transparent"
+        }`}
+      >
+        {/* Brand */}
+        <button onClick={() => go("top")} className="group flex shrink-0 items-center gap-2.5 rounded-xl px-2 py-1.5 transition hover:bg-white/[0.04]">
+          <span className="grid h-8 w-8 place-items-center rounded-lg border border-lime/25 bg-lime/[0.07] shadow-[0_0_20px_-6px_rgba(200,255,61,0.6)]">
+            <Mark className="h-[18px] w-[18px]" />
+          </span>
+          <span className="font-mono text-[13.5px] font-semibold tracking-[-0.01em]">
+            mohan<span className="text-lime">.</span>builds
+          </span>
         </button>
-        <span className="hidden items-center gap-1.5 rounded-md border border-line px-2 py-0.5 font-mono text-[11px] text-mute md:flex">
-          <BranchIcon className="h-3 w-3 text-lime" /> main
+        <span className="hidden items-center gap-1.5 rounded-full border border-line bg-bg/60 px-2.5 py-1 font-mono text-[11px] text-mute xl:flex">
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="absolute inset-0 animate-ping rounded-full bg-add/70" />
+            <span className="relative h-1.5 w-1.5 rounded-full bg-add" />
+          </span>
+          main
         </span>
-        <nav className="ml-2 hidden h-12 items-stretch lg:flex">
-          {sections.slice(1).map((s) => (
-            <button
-              key={s.id}
-              onClick={() => go(s.id)}
-              className={`relative flex items-center gap-2 border-l border-line px-4 font-mono text-[12px] transition last:border-r ${
-                active === s.id ? "bg-panel text-text" : "text-dim hover:text-mute"
-              }`}
-            >
-              <span className={`h-1.5 w-1.5 rounded-full ${active === s.id ? "bg-lime" : "bg-line"}`} />
-              {s.file}
-              {active === s.id && <motion.span layoutId="tab" className="absolute inset-x-0 top-0 h-[2px] bg-lime" />}
-            </button>
-          ))}
+
+        {/* Tabs */}
+        <nav className="mx-auto hidden items-center gap-0.5 rounded-xl border border-line bg-bg/70 p-1 lg:flex">
+          {sections.slice(1).map((s) => {
+            const on = active === s.id;
+            return (
+              <button
+                key={s.id}
+                onClick={() => (s.id === "signal" ? signal() : go(s.id))}
+                className={`relative flex h-[34px] items-center gap-2 rounded-lg px-3.5 font-mono text-[12px] transition-colors ${on ? "text-text" : "text-dim hover:text-mute"}`}
+              >
+                {on && (
+                  <motion.span
+                    layoutId="tab"
+                    transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                    className="absolute inset-0 rounded-lg bg-white/[0.07] ring-1 ring-inset ring-white/10"
+                  />
+                )}
+                <span className={`relative ${on ? (s.id === "signal" ? "text-white" : "text-lime") : ""}`}>{tabIcon[s.id]}</span>
+                <span className="relative">{s.file}</span>
+              </button>
+            );
+          })}
         </nav>
-        <div className="ml-auto flex items-center gap-3">
-          <span className="hidden font-mono text-[11px] text-dim sm:block">{person.city} · {time} IST</span>
+
+        {/* Right */}
+        <div className="ml-auto flex items-center gap-2 lg:ml-0">
+          <span className="hidden items-center gap-2 px-2 font-mono text-[11px] text-dim md:flex">
+            <span className="text-mute">{person.city}</span>
+            <span className="tabular-nums text-text/80">{time}</span>
+            <span>IST</span>
+          </span>
           <button
-            onClick={() => (go("signal"), setTimeout(() => window.dispatchEvent(new Event("signal:light")), 650))}
+            onClick={signal}
             title="Light the signal"
             aria-label="Light the signal"
-            className="group grid h-[30px] w-[42px] place-items-center rounded-lg border border-line bg-panel transition hover:border-bat/60"
+            className="group grid h-[34px] w-[44px] place-items-center rounded-lg border border-line bg-panel/80 transition hover:border-white/40 hover:shadow-[0_0_24px_-6px_rgba(255,255,255,0.6)]"
           >
-            <BatLogo className="h-2.5 w-6 text-bat/55 transition group-hover:text-bat group-hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.9)]" />
+            <BatLogo className="h-2.5 w-6 text-white/60 transition group-hover:text-white" />
           </button>
           <button
             onClick={onPalette}
-            className="flex items-center gap-2 rounded-lg border border-line bg-panel px-2.5 py-1.5 font-mono text-[11px] text-mute transition hover:border-lime/50 hover:text-text"
+            className="flex h-[34px] items-center gap-2 rounded-lg border border-line bg-panel/80 px-2.5 font-mono text-[11.5px] text-mute transition hover:border-lime/50 hover:text-text"
           >
-            <span>Jump to</span>
+            <Search className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Jump to</span>
             <kbd className="rounded border border-line bg-bg px-1.5 text-[10px] text-dim">⌘K</kbd>
           </button>
         </div>
+
+        {/* Scroll progress along the bottom edge. */}
+        <motion.div
+          style={{ scaleX: p }}
+          className={`absolute inset-x-4 -bottom-px h-px origin-left bg-gradient-to-r from-lime/0 via-lime/80 to-lime transition-opacity duration-500 ${floating ? "opacity-100" : "opacity-0"}`}
+        />
       </div>
-      <motion.div style={{ scaleX: p }} className="h-px origin-left bg-lime/70" />
     </header>
   );
 }
-
 export function Mark({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 64 64" className={className} aria-hidden>

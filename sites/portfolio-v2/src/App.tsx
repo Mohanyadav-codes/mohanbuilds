@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { GraphLine, Palette, TopBar } from "./Chrome";
 import { Loader } from "./Loader";
-import { Branches, Deps, Hero, Log, Push, Readme, Signal } from "./Sections";
+import { Branches, Deps, Hero, Log, Readme, Signal } from "./Sections";
 
 export function App() {
   const [palette, setPalette] = useState(false);
@@ -18,7 +18,6 @@ export function App() {
         <Log />
         <Deps />
         <Readme />
-        <Push />
       </main>
       <Signal />
       <Palette open={palette} setOpen={setPalette} />
