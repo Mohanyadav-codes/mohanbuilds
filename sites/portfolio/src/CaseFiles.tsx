@@ -63,7 +63,7 @@ function File({ p, i, rot }: { p: Project; i: number; rot: number }) {
         )}
       </div>
       <span className="pointer-events-none absolute right-4 top-[38%] rotate-[-14deg] rounded border-[3px] border-[#b0201a]/70 px-2 py-0.5 font-display text-[18px] font-extrabold uppercase tracking-wider text-[#b0201a]/70 transition-opacity duration-300 group-hover:opacity-0">
-        Solved
+        {p.building ? "Open case" : "Solved"}
       </span>
     </motion.a>
   );

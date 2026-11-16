@@ -55,10 +55,22 @@ export interface Project {
   stack: string[];
   url: string;
   team?: boolean;
+  /** Still being built: stamped 'Open case' instead of 'Solved'. */
+  building?: boolean;
   hue: number;
 }
 
 export const projects: Project[] = [
+  {
+    name: "Arclor",
+    kind: "AI agent · video · in progress",
+    blurb: "An AI video director. Your coding agent writes the scenes; Arclor runs the whole film and checks every frame.",
+    points: ["Plan, storyboard, scenes, QA, render", "Talks to coding agents over MCP", "Remotion renders, AI voiceover and music"],
+    stack: ["TypeScript", "MCP", "Remotion", "AI agents"],
+    url: "https://www.youtube.com/@Mohan.Builds",
+    building: true,
+    hue: 40,
+  },
   {
     name: "Gito",
     kind: "AI agent · RAG",
@@ -76,16 +88,6 @@ export const projects: Project[] = [
     stack: ["Python", "OpenCV", "Flask", "React"],
     url: "https://github.com/Mohanyadav-codes/Computer-Vision-AI-attendance-system",
     hue: 190,
-  },
-  {
-    name: "Research Agent",
-    kind: "LLM agent · search",
-    blurb: "Describe a problem; get the papers that matter from 250M+ on OpenAlex.",
-    points: ["LLM maps your words to research terms", "Evidence quotes verified against abstracts", "Every API call costed in the UI"],
-    stack: ["JavaScript", "LLMs", "OpenAlex"],
-    url: "https://github.com/Kuldeep-ux-cell/Research-Agent",
-    team: true,
-    hue: 265,
   },
   {
     name: "Jester AI",
