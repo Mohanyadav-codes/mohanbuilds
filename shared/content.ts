@@ -50,7 +50,7 @@ export const products: Product[] = [
     name: "Cutdeck",
     tagline: "Long videos in. Shorts out.",
     blurb: "Paste a YouTube link. Cutdeck finds the moments worth posting, frames them for vertical and adds captions, on your own computer.",
-    url: "https://cutdeck.mohanbuilds.com",
+    url: "https://cutdeck.mohanbuilds.space",
     status: "live",
     platforms: ["Windows"],
     price: "Free",

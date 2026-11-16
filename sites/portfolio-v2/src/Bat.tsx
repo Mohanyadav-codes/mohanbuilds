@@ -2,7 +2,7 @@
 export const BAT_PATH =
   "M100 32 L106 14 L111 33 C120 34 132 26 140 14 C160 22 185 30 198 50 C186 52 176 58 172 70 C165 62 152 62 146 70 C140 62 128 62 124 74 C116 72 106 80 100 96 C94 80 84 72 76 74 C72 62 60 62 54 70 C48 62 35 62 28 70 C24 58 14 52 2 50 C15 30 40 22 60 14 C68 26 80 34 89 33 L94 14 Z";
 
-export const BAT = "#ffd21f";
+export const BAT = "#ffffff";
 
 export function BatLogo({ className = "", fill = "currentColor" }: { className?: string; fill?: string }) {
   return (
@@ -18,9 +18,9 @@ export function SignalOval({ lit, className = "" }: { lit: boolean; className?: 
     <svg viewBox="-14 -22 228 150" className={className} aria-hidden>
       <defs>
         <radialGradient id="oval-lit" cx="0.5" cy="0.45" r="0.6">
-          <stop offset="0" stopColor="#fff3b0" />
+          <stop offset="0" stopColor="#ffffff" />
           <stop offset="0.55" stopColor={BAT} />
-          <stop offset="1" stopColor="#e0a800" />
+          <stop offset="1" stopColor="#d6d9e0" />
         </radialGradient>
       </defs>
       <ellipse

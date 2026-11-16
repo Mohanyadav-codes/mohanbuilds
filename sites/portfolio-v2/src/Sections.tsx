@@ -79,11 +79,11 @@ export function Hero({ ready }: { ready: boolean }) {
 
         <div className="mt-10 grid items-end gap-10 lg:grid-cols-[1fr_400px]">
           <div>
-            <motion.p {...show(0.9)} className="max-w-[26ch] font-serif text-[clamp(30px,3.6vw,52px)] italic leading-[1.05] text-text/90">
-              I build AI tools that run on your own machine, <span className="text-lime">and film how they're made.</span>
+            <motion.p {...show(0.9)} className="font-serif text-[clamp(26px,2.6vw,38px)] italic leading-[1.1] text-text/90">
+              I build AI tools. <span className="text-lime">Then I film them.</span>
             </motion.p>
             <motion.div {...show(1.05)} className="mt-8 flex flex-wrap items-center gap-2 font-mono text-[12px]">
-              {[person.role, person.study, person.city, person.since].map((t) => (
+              {[person.role, person.since].map((t) => (
                 <span key={t} className="rounded-md border border-line bg-panel/70 px-2.5 py-1 text-mute">
                   {t}
                 </span>
@@ -119,10 +119,6 @@ export function Hero({ ready }: { ready: boolean }) {
                   <span className="redact inline-block h-3 w-16" />/
                 </span>
               </div>
-              <div className="pt-2 text-mute">
-                <span className="text-lime">$</span> uptime
-              </div>
-              <div className="text-text/80">{person.since.toLowerCase()}</div>
               {push && (
                 <>
                   <div className="pt-2 text-mute">
@@ -212,7 +208,6 @@ function ProductRow({ p, i }: { p: Product; i: number }) {
           <p className="mt-3 font-serif text-[26px] italic leading-tight" style={{ color: p.accent2 }}>
             {p.tagline}
           </p>
-          <p className="mt-5 max-w-[46ch] text-[15.5px] leading-relaxed text-mute">{p.blurb}</p>
           <span className="mt-8 inline-flex items-center gap-2 font-mono text-[12.5px] text-text">
             <span className="border-b border-current pb-0.5 transition group-hover:text-lime">{p.url.replace("https://", "")}</span>
             <ArrowUpRight className="h-4 w-4 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-lime" />
@@ -281,8 +276,7 @@ function ClassifiedRow() {
           <h3 className="mt-6 flex items-center gap-4 text-[clamp(44px,5.5vw,76px)] font-semibold leading-none tracking-[-0.04em] text-text/40">
             Classified <Lock className="h-8 w-8 text-dim transition group-hover:text-sun" />
           </h3>
-          <p className="mt-3 font-serif text-[26px] italic leading-tight text-dim">The third tool. Still in the dark.</p>
-          <p className="mt-5 max-w-[46ch] text-[15.5px] leading-relaxed text-dim">It ships when it's ready. Follow the builds to see it first.</p>
+          <p className="mt-3 font-serif text-[26px] italic leading-tight text-dim">Still in the dark.</p>
         </div>
         <div className="border-t border-line bg-bg/40 p-5 font-mono text-[13px] lg:border-l lg:border-t-0">
           <div className="mb-3 text-[11px] text-dim">git diff --stat · access denied</div>
@@ -302,7 +296,7 @@ export function Branches() {
   return (
     <section id="branches" className="scroll-mt-20 py-28 md:py-36">
       <Head id="branches" cmd="git branch --list 'feat/*'" title={<>Tools that <span className="font-serif font-normal italic text-lime">ship.</span></>}>
-        Every tool from Mohan Builds gets its own site, and each one does one job well. Two are live. The third is still a secret.
+        Two live. One secret.
       </Head>
       <div className="space-y-6">
         {products.map((p, i) => (
@@ -322,7 +316,7 @@ export function Log() {
   return (
     <section id="log" className="scroll-mt-20 py-28 md:py-36">
       <Head id="log" cmd="git log --oneline projects/" title={<>Things I've <span className="font-serif font-normal italic text-lime">committed.</span></>}>
-        Agents, RAG, computer vision and developer tools. Open any commit to see what's inside.
+        Click a commit to open it.
       </Head>
       <div className="overflow-hidden rounded-2xl border border-line bg-panel font-mono">
         {projects.map((p, i) => {
@@ -405,7 +399,7 @@ export function Deps() {
   return (
     <section id="deps" className="scroll-mt-20 py-28 md:py-36">
       <Head id="deps" cmd="cat package.json" title={<>What I <span className="font-serif font-normal italic text-lime">build with.</span></>}>
-        {total} tools across {tracks.length} areas. AI comes first, because that's what most of my work is about.
+        {total} tools. AI first.
       </Head>
       <div className="overflow-hidden rounded-2xl border border-line bg-panel">
         <div className="flex items-center gap-2 border-b border-line bg-bg/50 px-4 py-2.5 font-mono text-[11.5px]">
@@ -475,8 +469,8 @@ export function Readme() {
         >
           <div className="font-mono text-[12px] text-dim"># README.md</div>
           <p className="mt-6 text-[clamp(24px,2.6vw,34px)] font-medium leading-[1.25] tracking-[-0.015em]">
-            By day I'm a student in Delhi. By night I ship <span className="text-lime">AI tools</span>, then film how I built them.{" "}
-            <span className="text-mute">There's always a little music on in the background.</span>
+            Student by day. <span className="text-lime">Shipping AI tools</span> by night.{" "}
+            <span className="text-mute">Music always on.</span>
           </p>
           <div className="mt-8 font-mono text-[12px] text-dim">## where to watch</div>
           <a
@@ -536,13 +530,13 @@ export function Push() {
   const [from, setFrom] = useState("");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
- const href = `mailto:${person.email}?subject=${encodeURIComponent(title || "Hello from mohanbuilds.com")}&body=${encodeURIComponent(
+ const href = `mailto:${person.email}?subject=${encodeURIComponent(title || "Hello from mohanbuilds.space")}&body=${encodeURIComponent(
     body + (from ? `\n\n— ${from}` : ""),
   )}`;
   return (
     <section id="push" className="scroll-mt-20 pb-16 pt-28 md:pt-36">
       <Head id="push" cmd="git push origin hello" title={<>Open a <span className="font-serif font-normal italic text-lime">pull request.</span></>}>
-        Got an idea, a build or a video you want to make together? Write it here and it opens in your email app, already filled in.
+        Got an idea? Write it here. It opens in your email app.
       </Head>
 
       <div className="grid gap-6 lg:grid-cols-[1.35fr_1fr]">
@@ -603,7 +597,7 @@ export function Push() {
             onClick={lightSignal}
             className="group mt-8 flex items-center gap-3 rounded-xl border border-bat/25 bg-bat/[0.04] px-4 py-3.5 text-left transition hover:border-bat/70 hover:bg-bat/[0.08]"
           >
-            <BatLogo className="h-3.5 w-8 shrink-0 text-bat transition group-hover:drop-shadow-[0_0_8px_rgba(255,210,31,0.8)]" />
+            <BatLogo className="h-3.5 w-8 shrink-0 text-bat transition group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
             <span className="text-mute">
               Rather DM? <span className="text-bat">Light the signal</span> <span className="inline-block transition group-hover:translate-y-0.5">↓</span>
             </span>
@@ -654,14 +648,14 @@ export function Signal() {
         className="pointer-events-none absolute inset-0"
         animate={{ opacity: lit ? 1 : 0 }}
         transition={{ duration: 0.8 }}
-        style={{ background: "radial-gradient(ellipse 55% 40% at 50% 34%, rgba(255,210,31,0.14), transparent 70%)" }}
+        style={{ background: "radial-gradient(ellipse 55% 40% at 50% 34%, rgba(255,255,255,0.14), transparent 70%)" }}
       />
 
       {/* The beam, from a rooftop up to the emblem. */}
       <motion.div
         className="pointer-events-none absolute bottom-[11.6vw] left-1/2 h-[82%] w-[70vw] max-w-[1100px] origin-bottom -translate-x-1/2"
         style={{
-          background: "linear-gradient(to top, rgba(255,210,31,0.42), rgba(255,210,31,0.08) 70%, transparent)",
+          background: "linear-gradient(to top, rgba(255,255,255,0.42), rgba(255,255,255,0.08) 70%, transparent)",
           clipPath: "polygon(48.5% 100%, 51.5% 100%, 76% 0, 24% 0)",
           filter: "blur(10px)",
         }}
@@ -683,7 +677,7 @@ export function Signal() {
           <span className={`font-serif font-normal italic transition-all duration-700 ${lit ? "bat-glow text-bat" : "text-text/30"}`}>signal.</span>
         </h2>
         <p className="mt-5 max-w-[46ch] text-[17px] leading-relaxed text-mute">
-          {lit ? "Signal's up. Pick a channel, I'll see it." : "Every channel I'm on, behind one switch. Press the emblem."}
+          {lit ? "Pick a channel." : "Press the emblem."}
         </p>
 
         <motion.button
@@ -692,7 +686,7 @@ export function Signal() {
           whileTap={{ scale: 0.96 }}
           aria-pressed={lit}
           aria-label={lit ? "Turn the signal off" : "Light the signal"}
-          className={`group relative mt-12 rounded-full transition-[filter] duration-700 ${lit ? "drop-shadow-[0_0_60px_rgba(255,210,31,0.55)]" : "hover:drop-shadow-[0_0_24px_rgba(255,210,31,0.18)]"}`}
+          className={`group relative mt-12 rounded-full transition-[filter] duration-700 ${lit ? "drop-shadow-[0_0_60px_rgba(255,255,255,0.55)]" : "hover:drop-shadow-[0_0_24px_rgba(255,255,255,0.18)]"}`}
         >
           <SignalOval lit={lit} className="w-[min(64vw,280px)]" />
           {!lit && (
@@ -757,7 +751,7 @@ export function Signal() {
         {/* The lamp on the rooftop the beam comes from. */}
         <motion.span
           className="absolute bottom-[11.4vw] left-1/2 z-10 h-[6px] w-[22px] -translate-x-1/2 rounded-full"
-          animate={{ backgroundColor: lit ? "#fff3b0" : "#2a2925", boxShadow: lit ? "0 0 24px 8px rgba(255,210,31,0.7)" : "0 0 0 0 rgba(0,0,0,0)" }}
+          animate={{ backgroundColor: lit ? "#ffffff" : "#2a2925", boxShadow: lit ? "0 0 24px 8px rgba(255,255,255,0.7)" : "0 0 0 0 rgba(0,0,0,0)" }}
           transition={{ duration: 0.5 }}
         />
         <Skyline className="block h-auto w-full" />

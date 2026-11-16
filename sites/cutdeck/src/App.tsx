@@ -282,7 +282,7 @@ function Footer() {
       <div className="mx-auto flex max-w-[1240px] flex-col items-center justify-between gap-4 px-6 py-8 text-[13px] text-dim md:flex-row">
         <div className="flex items-center gap-2.5">
           <img src="/icon.png" alt="" className="h-6 w-6 rounded-md" />
-          <span>Cutdeck {release.version} · a <a href="https://mohanbuilds.com" className="text-paper hover:text-coral">Mohan Builds</a> app</span>
+          <span>Cutdeck {release.version} · a <a href="https://mohanbuilds.space" className="text-paper hover:text-coral">Mohan Builds</a> app</span>
         </div>
         <div className="flex items-center gap-5">
           {person.links.slice(0, 3).map((l) => (

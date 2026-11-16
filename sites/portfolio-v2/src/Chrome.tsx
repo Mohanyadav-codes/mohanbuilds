@@ -43,7 +43,7 @@ export function TopBar({ onPalette }: { onPalette: () => void }) {
             aria-label="Light the signal"
             className="group grid h-[30px] w-[42px] place-items-center rounded-lg border border-line bg-panel transition hover:border-bat/60"
           >
-            <BatLogo className="h-2.5 w-6 text-bat/55 transition group-hover:text-bat group-hover:drop-shadow-[0_0_6px_rgba(255,210,31,0.9)]" />
+            <BatLogo className="h-2.5 w-6 text-bat/55 transition group-hover:text-bat group-hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.9)]" />
           </button>
           <button
             onClick={onPalette}
@@ -95,7 +95,7 @@ export function Palette({ open, setOpen }: { open: boolean; setOpen: (v: boolean
       ...sections.map((s) => ({ group: "Go to", label: s.label, hint: s.file, run: () => go(s.id) })),
       ...person.links.map((l) => ({ group: "Open", label: l.label, hint: l.handle, run: () => window.open(l.url, "_blank", "noopener") })),
       { group: "Open", label: "Arclor", hint: "arclor.com", run: () => window.open("https://arclor.com", "_blank", "noopener") },
-      { group: "Open", label: "Cutdeck", hint: "cutdeck.mohanbuilds.com", run: () => window.open("https://cutdeck.mohanbuilds.com", "_blank", "noopener") },
+      { group: "Open", label: "Cutdeck", hint: "cutdeck.mohanbuilds.space", run: () => window.open("https://cutdeck.mohanbuilds.space", "_blank", "noopener") },
       {
         group: "Do",
         label: "Copy email",

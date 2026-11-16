@@ -24,7 +24,7 @@
   --color-sky: #7aa2ff;
   --color-sun: #ffbe55;
   --color-plum: #d58cff;
-  --color-bat: #ffd21f;
+  --color-bat: #ffffff;
 }
 
 @layer base {
@@ -101,7 +101,7 @@
   100% { opacity: 0; transform: scale(1.8); }
 }
 
-.bat-glow { text-shadow: 0 0 30px rgb(255 210 31 / 0.55), 0 0 80px rgb(255 210 31 / 0.25); }
+.bat-glow { text-shadow: 0 0 30px rgb(255 255 255 / 0.55), 0 0 80px rgb(255 255 255 / 0.25); }
 
 @media (prefers-reduced-motion: reduce) {
   .grain::after, .caret::after, .contrib-cell.is-today::after { animation: none; }

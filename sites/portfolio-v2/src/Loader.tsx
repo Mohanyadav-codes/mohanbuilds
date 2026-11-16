@@ -48,7 +48,7 @@ const ROWS: Row[] = [
   { lane: 1, c: BAT, redact: [64, 22, 90] },
   { msg: "film: how it was built · youtube", pass: { c: BAT, dashed: true } },
   { lane: 1, c: BAT, tip: true, redact: [40, 70], refs: [{ t: "feat/classified", c: BAT }] },
-  { msg: "ship: mohanbuilds.com", head: true, refs: [{ t: "HEAD → main", c: LIME }, { t: "origin/main", c: "#ff6b5b" }] },
+  { msg: "ship: mohanbuilds.space", head: true, refs: [{ t: "HEAD → main", c: LIME }, { t: "origin/main", c: "#ff6b5b" }] },
 ];
 const N = ROWS.length;
 const sha = (r: Row, i: number) => (r.head ? hash("head") : hash(`${i}:${r.msg ?? "redacted"}`));
