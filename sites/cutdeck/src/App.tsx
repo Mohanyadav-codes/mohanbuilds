@@ -127,6 +127,9 @@ function Hero({ ready }: { ready: boolean }) {
                 <span key={s} className="rounded-md border border-white/[0.08] bg-white/[0.03] px-2 py-0.5 font-mono text-[11.5px] text-mute">{s}</span>
               ))}
             </div>
+            <a href="https://www.producthunt.com/products/cutdeck-2?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-cutdeck-2" target="_blank" rel="noreferrer">
+              <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1320486&theme=dark" alt="Cutdeck - Long videos in. Shorts out - a free clipper for Windows | Product Hunt" width="250" height="54" />
+            </a>
           </motion.div>
         </div>
 
